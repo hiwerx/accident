@@ -86,6 +86,18 @@ public class Info implements Serializable {
     private Integer type;
 
     /**
+     * 投递状态
+     */
+    @TableField("status")
+    private String status;
+
+    /**
+     * 事故原因
+     */
+    @TableField("reason")
+    private String reason;
+
+    /**
      * 更新时间
      */
     @TableField("update_time")

@@ -7,13 +7,15 @@
         <id column="id" property="id" />
         <result column="date" property="date" />
         <result column="place" property="place" />
-        <result column="provence" property="provence" />
+        <result column="province" property="province" />
         <result column="city" property="city" />
         <result column="area" property="area" />
         <result column="introduce" property="introduce" />
         <result column="injury_num" property="injuryNum" />
         <result column="death_num" property="deathNum" />
         <result column="type" property="type" />
+        <result column="status" property="status" />
+        <result column="reason" property="reason" />
         <result column="update_time" property="updateTime" />
     </resultMap>
 
