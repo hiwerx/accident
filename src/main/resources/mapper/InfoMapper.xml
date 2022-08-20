@@ -13,9 +13,10 @@
         <result column="introduce" property="introduce" />
         <result column="injury_num" property="injuryNum" />
         <result column="death_num" property="deathNum" />
+        <result column="missing_num" property="missingNum" />
         <result column="type" property="type" />
-        <result column="status" property="status" />
         <result column="reason" property="reason" />
+        <result column="status" property="status" />
         <result column="update_time" property="updateTime" />
     </resultMap>
 

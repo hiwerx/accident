@@ -1,14 +1,15 @@
 package com.lq.accident.model;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
-import java.time.LocalDate;
-import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableField;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -16,7 +17,7 @@ import lombok.EqualsAndHashCode;
  * </p>
  *
  * @author lq.com
- * @since 2022-08-10
+ * @since 2022-08-20
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -46,8 +47,8 @@ public class Info implements Serializable {
     /**
      * 省
      */
-    @TableField("provence")
-    private String provence;
+    @TableField("province")
+    private String province;
 
     /**
      * 市
@@ -80,22 +81,28 @@ public class Info implements Serializable {
     private Integer deathNum;
 
     /**
+     * 失联人数
+     */
+    @TableField("missing_num")
+    private Integer missingNum;
+
+    /**
      * 事故类型
      */
     @TableField("type")
     private Integer type;
 
     /**
-     * 投递状态
-     */
-    @TableField("status")
-    private String status;
-
-    /**
      * 事故原因
      */
     @TableField("reason")
     private String reason;
+
+    /**
+     * 投递消息状态，0已投递，1已阅读，2已忽略
+     */
+    @TableField("status")
+    private String status;
 
     /**
      * 更新时间
