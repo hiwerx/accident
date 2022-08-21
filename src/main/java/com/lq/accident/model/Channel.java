@@ -10,7 +10,7 @@ import java.io.Serializable;
 
 /**
  * <p>
- * tag与accident关联
+ * 标签
  * </p>
  *
  * @author lq.com
@@ -21,8 +21,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(callSuper = false)
-@TableName("accident_tag")
-public class AccidentTag implements Serializable {
+@TableName("channel")
+public class Channel implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -30,16 +30,16 @@ public class AccidentTag implements Serializable {
     private Integer id;
 
     /**
-     * 事故id
+     * 标签名
      */
-    @TableField("info_id")
-    private Integer infoId;
+    @TableField("channel")
+    private String channel;
 
     /**
-     * 标签id
+     * 频次
      */
-    @TableField("tag_id")
-    private Integer tagId;
+    @TableField("sort")
+    private Integer sort;
 
 
 }

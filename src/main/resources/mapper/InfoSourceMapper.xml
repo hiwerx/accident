@@ -9,6 +9,8 @@
         <result column="url" property="url" />
         <result column="url_title" property="urlTitle" />
         <result column="create_time" property="createTime" />
+        <result column="source_date" property="sourceDate" />
+        <result column="channel_id" property="channelId" />
     </resultMap>
 
 </mapper>

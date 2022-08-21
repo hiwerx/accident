@@ -3,11 +3,13 @@ package com.lq.accident.model;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+
+import lombok.*;
 
 /**
  * <p>
@@ -18,6 +20,9 @@ import lombok.EqualsAndHashCode;
  * @since 2022-08-10
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @EqualsAndHashCode(callSuper = false)
 @TableName("info_source")
 public class InfoSource implements Serializable {
@@ -47,6 +52,15 @@ public class InfoSource implements Serializable {
      */
     @TableField("url_title")
     private String urlTitle;
+
+    @TableField("channel_id")
+    private Integer channelId;
+
+    /**
+     * 来源信息时间
+     */
+    @TableField("source_date")
+    private LocalDate sourceDate;
 
     /**
      * 创建时间

@@ -1,12 +1,19 @@
 package com.lq.accident.model.dto;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import cn.hutool.core.lang.Console;
+import com.alibaba.fastjson.JSON;
+import com.lq.accident.model.Info;
+import com.lq.accident.model.InfoSource;
+import lombok.*;
+import org.springframework.beans.BeanUtils;
 
 import java.time.LocalDate;
+import java.util.*;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @EqualsAndHashCode(callSuper = false)
 public class InfoDTO {
     /**
@@ -22,7 +29,7 @@ public class InfoDTO {
     /**
      * 省
      */
-    private String provence;
+    private String province;
 
     /**
      * 市
@@ -50,6 +57,11 @@ public class InfoDTO {
     private Integer deathNum;
 
     /**
+     * 失联人数
+     */
+    private Integer missingNum;
+
+    /**
      * 事故类型
      */
     private Integer type;
@@ -62,7 +74,43 @@ public class InfoDTO {
     /**
      * 消息来源
      */
-    private String sourceUrl;
+    private List<InfoSource> sourceUrls;
 
+    /**
+     * 信息关键词
+     */
+    private List<String> tags;
+
+    public static void main(String[] args) {
+        InfoDTO dto = InfoDTO.builder()
+                .province("湖北")
+                .city("随州")
+                .area("随县")
+                .date(LocalDate.now())
+                .reason("森林火灾")
+                .introduce("sdglkjsd")
+                .injuryNum(2)
+//                .sourceUrls(Arrays.asList("http1","http2"))
+                .tags(Arrays.asList("t1","t2","t3"))
+                .build();
+
+        Console.log(JSON.toJSONString(dto,true));
+        Info info = new Info();
+        BeanUtils.copyProperties(dto,info);
+        Console.log(JSON.toJSONString(info,true));
+
+        Map mi = new HashMap();
+        mi.put("23","wer");
+        mi.put("io","iok");
+        Map m2 = new HashMap();
+        m2.put("m223","wer");
+        m2.put("m2io","iok");
+        List<Map> ll = Arrays.asList(mi,m2);
+        for (Map map : ll) {
+            map.put("rt",34);
+        }
+        System.out.println(mi);
+        System.out.println(m2);
+    }
 
 }
