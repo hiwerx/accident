@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>首页</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Nunito:400,600,700,800|Roboto:400,500,700" rel="stylesheet">
+    <!-- Theme CSS -->
+    <link type="text/css" href="./assets/css/theme.css" rel="stylesheet">
+<!--    <link rel="stylesheet" href="https://unpkg.com/@tabler/core@latest/dist/css/tabler.min.css">-->
+    <link rel="stylesheet" href="./assets/vendor/bootstrap/css/bootstrap.min.css">
+
+    <!-- Core -->
+    <script src="./assets/vendor/jquery/jquery.min.js"></script>
+    <script src="./assets/vendor/popper/popper.min.js"></script>
+    <script src="./assets/js/bootstrap/bootstrap.min.js"></script>
+    <!-- Page plugins -->
+    <script src="./assets/vendor/bootstrap-select/js/bootstrap-select.min.js"></script>
+    <script src="./assets/vendor/bootstrap-tagsinput/bootstrap-tagsinput.min.js"></script>
+    <script src="./assets/vendor/input-mask/input-mask.min.js"></script>
+    <script src="./assets/vendor/nouislider/js/nouislider.min.js"></script>
+    <script src="./assets/vendor/textarea-autosize/textarea-autosize.min.js"></script>
+    <!-- Theme JS -->
+    <script src="./assets/js/theme.js"></script>
+
+<!--    <script src="https://unpkg.com/@tabler/core@latest/dist/js/tabler.min.js"></script>-->
+    <!--引入Vue框架-->
+    <script src="./assets/vendor/vue/dist/vue.js"></script>
+    <!--引入axios框架-->
+    <script src="./assets/vendor/axios/dist/axios.min.js"></script>
+
+</head>
+<body>
+
+<div id="acctPwdId" class="container-fluid">
+
+    <div id="accidentId" class="row">
+        <div class="col-xl-8 offset-xl-2">
+            <template v-for="(a,index) in accidentList">
+            <div class="card ">
+                <div class="card-header">
+
+                    <div class="row align-items-center">
+                        <div class="col-8">
+                            <span v-text="a.title"></span>
+                        </div>
+                        <div class="col-4">
+                            <div class="card-icon-actions text-right">
+                                <span v-text="a.date"></span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div >
+                        <span class="text-left" v-for="(t,index) in a.tags" v-text="t.tag"> 泥石流</span>
+                    </div>
+
+                    <div>
+                        <span v-text="a.introduce"></span>
+                    </div>
+
+                    <!--            更新时间-->
+                    <div>
+                        <span>更新日期</span>
+                        <span v-text="a.updateTime">2022-08-27 16:45:22</span>
+                    </div>
+
+                    <!--            参考-->
+                    <div>参考</div>
+                    <div>
+                        <div  v-for="(s,index) in a.sourceUrls">
+                            <a v-bind:href="s.url" v-bind:title="s.urlTitle"  target="_blank" v-text="s.urlTitle">事故1</a>
+                            <span v-text="s.channel">央视新闻</span>
+                            <span v-text="s.sourceDate">2022-08-27</span>
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+            </div>
+                <br>
+            </template>
+        </div>
+
+    </div>
+    </div>
+</div>
+</body>
+<script src="assets/js/jsencrypt.js"></script>
+<script src="assets/js/crypto-js.js"></script>
+
+<script>
+    let accidentApp = new Vue({
+        el: "#accidentId",
+        data: {
+            accidentList:[{
+                "title": null,
+                "updateTime": "2022-08-21T23:46:49",
+                "date": "2022-08-18",
+                "place": "青海大通",
+                "province": "青海省",
+                "city": "西宁市",
+                "area": "大通县",
+                "introduce": "中国天气网讯 8月18日，青海西宁大通县青林乡、青山乡瞬间强降雨后引发山洪，造成泥石流，致使河流改道漫溢",
+                "injuryNum": 0,
+                "deathNum": 26,
+                "missingNum": 5,
+                "type": "自然灾害",
+                "reason": "强降雨后引发山洪、泥石流",
+                "sourceUrls": [{
+                    "url": "https://news.cctv.com/2022/08/21/ARTIxIFmvkxMdydf3WvjN0VG220821.shtml",
+                    "urlTitle": "青海大通“8·18”山洪灾害已造成26人遇难 仍有5人失联",
+                    "channel": "央视新闻",
+                    "sourceDate": null
+                },
+                    {
+                        "url": "https://news.cctv.com/2022/08/18/ARTI6vQtOsftO4onJfSkRPm6220818.shtml",
+                        "urlTitle": "青海西宁大通县山洪灾害已造成16人死亡36人失联",
+                        "channel": "央视新闻",
+                        "sourceDate": null
+                    }],
+                "tags": [{
+                    "id": 3,
+                    "tag": "泥石流",
+                    "count": null
+                },
+                    {
+                        "id": 2,
+                        "tag": "山洪",
+                        "count": null
+                    },
+                    {
+                        "id": 1,
+                        "tag": "暴雨",
+                        "count": null
+                    }]
+            },
+                {
+                    "title": null,
+                    "updateTime": "2022-08-22T00:32:32",
+                    "date": "2022-08-13",
+                    "place": "彭州龙槽沟",
+                    "province": "四川省",
+                    "city": "成都市",
+                    "area": "彭州市",
+                    "introduce": "上游强降雨致龙槽沟突发山洪",
+                    "injuryNum": 0,
+                    "deathNum": 7,
+                    "missingNum": 0,
+                    "type": "自然灾害",
+                    "reason": "上游强降雨致龙槽沟突发山洪",
+                    "sourceUrls": [{
+                        "url": "https://www.163.com/dy/article/HETRA7KG0519QIKK.html",
+                        "urlTitle": "龙槽沟山洪当天，竟有知名旅行社组织百人戏水！有人被困3小时",
+                        "channel": "网易新闻",
+                        "sourceDate": "2022-08-16"
+                    },
+                        {
+                            "url": "https://www.toutiao.com/article/7133071895531880964/?wid=1661098998134",
+                            "urlTitle": "彭州龙槽沟山洪致7人死亡，从这三个定律看悲剧背后的真相",
+                            "channel": "今日头条",
+                            "sourceDate": "2022-08-18"
+                        }],
+                    "tags": [{
+                        "id": 4,
+                        "tag": "龙槽沟",
+                        "count": null
+                    },
+                        {
+                            "id": 2,
+                            "tag": "山洪",
+                            "count": null
+                        }]
+                }]
+        },
+        created: function () {
+            this.getAllData()
+        },
+        methods: {
+            getAllData: function(){
+                axios.get('/accident/info/all').then(res => {
+                    this.accidentList = res.data.data
+                    console.log(res.data.data)
+                })
+            }
+        }
+    })
+</script>
+</html>
