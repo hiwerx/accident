@@ -5,6 +5,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.lq.accident.model.Info">
         <id column="id" property="id" />
+        <result column="title" property="title" />
         <result column="date" property="date" />
         <result column="place" property="place" />
         <result column="province" property="province" />
@@ -19,5 +20,49 @@
         <result column="status" property="status" />
         <result column="update_time" property="updateTime" />
     </resultMap>
+
+    <resultMap id="AllInfoMap" type="com.lq.accident.model.vo.InfoVO">
+        <result column="title" property="title" />
+        <result column="date" property="date" />
+        <result column="place" property="place" />
+        <result column="province" property="province" />
+        <result column="city" property="city" />
+        <result column="area" property="area" />
+        <result column="introduce" property="introduce" />
+        <result column="injury_num" property="injuryNum" />
+        <result column="death_num" property="deathNum" />
+        <result column="missing_num" property="missingNum" />
+        <result column="typeName" property="type" />
+        <result column="reason" property="reason" />
+        <result column="update_time" property="updateTime" />
+        <collection property="tags" ofType="com.lq.accident.model.Tag">
+            <result column="tagId" property="id" />
+            <result column="tag" property="tag" />
+        </collection>
+        <collection property="sourceUrls" ofType="com.lq.accident.model.vo.InfoSourceVO">
+            <result column="url" property="url" />
+            <result column="url_title" property="urlTitle" />
+            <result column="channel" property="channel" />
+            <result column="source_date" property="sourceDate" />
+        </collection>
+    </resultMap>
+
+    <select id="selectAllInfo" resultMap="AllInfoMap">
+select ai.*, at.name typeName ,
+       t.id tagId,t.tag,
+    i.url,i.url_title, c.channel, i.source_date
+from accident_info ai
+
+    left join accident_type at on ai.type = at.id
+
+    left join accident_tag atg on atg.info_id = ai.id
+    left join tag t on t.id = atg.tag_id
+
+    left join info_source i on ai.id = i.info_id
+    left join channel c on i.channel_id = c.id
+    where ai.status is null
+order by ai.date desc, source_date, t.id desc
+
+    </select>
 
 </mapper>

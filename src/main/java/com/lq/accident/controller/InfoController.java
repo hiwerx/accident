@@ -2,8 +2,11 @@ package com.lq.accident.controller;
 
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.extension.api.R;
+import com.lq.accident.mapper.InfoMapper;
 import com.lq.accident.model.Info;
 import com.lq.accident.model.dto.InfoDTO;
+import com.lq.accident.model.vo.InfoVO;
 import com.lq.accident.service.impl.InfoServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -33,6 +37,14 @@ public class InfoController {
     RedisTemplate<String,String> redisTemplate;
     @Autowired
     InfoServiceImpl infoService;
+    @Autowired
+    InfoMapper infoMapper;
+
+    @RequestMapping("all")
+    public R<List<InfoVO>> getAll(){
+        return R.ok(infoMapper.selectAllInfo());
+    }
+
 
     // 防止恶意投递
     @RequestMapping("/postInfo")

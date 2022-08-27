@@ -16,6 +16,8 @@ import java.util.*;
 @Builder
 @EqualsAndHashCode(callSuper = false)
 public class InfoDTO {
+
+    private String title;
     /**
      * 发生日期
      */

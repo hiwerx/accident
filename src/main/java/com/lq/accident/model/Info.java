@@ -33,6 +33,11 @@ public class Info implements Serializable {
     private Integer id;
 
     /**
+     * 标题
+     */
+    @TableField("title")
+    private String title;
+    /**
      * 发生日期
      */
     @TableField("date")
