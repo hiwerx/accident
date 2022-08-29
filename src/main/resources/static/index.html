@@ -31,6 +31,15 @@
     <script src="./assets/vendor/axios/dist/axios.min.js"></script>
 
 </head>
+<style>
+    p {
+        margin: 0;
+        text-indent: 4ch;
+    }
+    .refer{
+        font-size: 90%;
+    }
+</style>
 <body>
 
 <div id="acctPwdId" class="container-fluid">
@@ -54,24 +63,31 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div >
-                        <span class="text-left" v-for="(t,index) in a.tags" v-text="t.tag"> 泥石流</span>
+                    <div class="mb-2">
+<!--                        <span class="text-left" v-for="(t,index) in a.tags" v-text="t.tag"> 泥石流</span>-->
+                        <span v-for="(t,index) in a.tags" v-text="t.tag"
+                              :class="'badge badge-pill '+bagClass[index%6]">Primary</span>
+
                     </div>
 
-                    <div>
-                        <span v-text="a.introduce"></span>
+                    <div class="mb-2">
+                        <p v-text="a.introduce"></p>
                     </div>
 
                     <!--            更新时间-->
-                    <div>
-                        <span>更新日期</span>
+                    <div class="mb-2 small text-right text-muted">
+                        <span>更新日期：</span>
                         <span v-text="a.updateTime">2022-08-27 16:45:22</span>
                     </div>
 
                     <!--            参考-->
-                    <div>参考</div>
+                    <div >
+                        <span class="font-weight-bold">参考</span>
+                    </div>
                     <div>
-                        <div  v-for="(s,index) in a.sourceUrls">
+
+                        <div class="refer"  v-for="(s,index) in a.sourceUrls">
+                            <span v-text="(index+1)+'.'"></span>
                             <a v-bind:href="s.url" v-bind:title="s.urlTitle"  target="_blank" v-text="s.urlTitle">事故1</a>
                             <span v-text="s.channel">央视新闻</span>
                             <span v-text="s.sourceDate">2022-08-27</span>
@@ -98,6 +114,13 @@
     let accidentApp = new Vue({
         el: "#accidentId",
         data: {
+            bagClass:['badge-primary',
+                'badge-secondary',
+                'badge-success',
+                'badge-danger',
+                'badge-warning',
+                'badge-info'
+            ],
             accidentList:[{
                 "title": null,
                 "updateTime": "2022-08-21T23:46:49",
@@ -137,8 +160,8 @@
                     {
                         "id": 1,
                         "tag": "暴雨",
-                        "count": null
-                    }]
+                        "count": null}
+                    ]
             },
                 {
                     "title": null,
