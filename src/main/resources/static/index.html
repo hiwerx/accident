@@ -10,7 +10,8 @@
     <link type="text/css" href="./assets/css/theme.css" rel="stylesheet">
 <!--    <link rel="stylesheet" href="https://unpkg.com/@tabler/core@latest/dist/css/tabler.min.css">-->
     <link rel="stylesheet" href="./assets/vendor/bootstrap/css/bootstrap.min.css">
-
+    <!-- fontawesome6 CSS -->
+    <link type="text/css" href="./assets/vendor/fontawesome/css/all.min.css" rel="stylesheet">
     <!-- Core -->
     <script src="./assets/vendor/jquery/jquery.min.js"></script>
     <script src="./assets/vendor/popper/popper.min.js"></script>
@@ -44,8 +45,60 @@
 
 <div id="acctPwdId" class="container-fluid">
 
+<!--    月份搜索，日期区间搜索，关键词搜索，关键词，延升地区搜索-->
+
     <div id="accidentId" class="row">
         <div class="col-xl-8 offset-xl-2">
+
+<!--            <div class="mb-2">-->
+<!--            <div class="btn-group">-->
+<!--                <button type="button" class="btn btn-light">当月</button>-->
+<!--                <button type="button" class="btn btn-light">上月</button>-->
+<!--                <button type="button" class="btn btn-light">近三月</button>-->
+<!--                <button type="button" class="btn btn-light">近半年</button>-->
+<!--                <button type="button" class="btn btn-light">今年</button>-->
+<!--            </div>-->
+<!--            </div>-->
+            <br>
+            <div v-if="searchParam.checkedDate==7"
+                    class="mb-3 row">
+                <div class="col-md-2">
+                <span>自定义区间：</span>
+                </div>
+                <div class="col-md-10">
+                <input type="date" v-model="searchParam.startDate" v-on:change="mixSearch()">
+                <span>--</span>
+                <input type="date" v-model="searchParam.endDate" v-on:change="mixSearch()">
+                </div>
+            </div>
+            <div class="form-group sticky-top">
+
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <select class="selectpicker" name="checkedDate"
+                                v-model="searchParam.checkedDate"
+                                v-on:change="mixSearch()">
+                            <option value="1">全部</option>
+                            <option value="2">当月</option>
+                            <option value="3">上月至今</option>
+                            <option value="4">近三月</option>
+                            <option value="5">近半年</option>
+                            <option value="6">今年来</option>
+                            <option value="7">自定义</option>
+                        </select>
+                    </div>
+                    <input type="text" class="form-control"  placeholder="搜索" v-model="searchParam.content" v-on:change="mixSearch">
+                    <div class="input-group-append">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="checkedTagFlag">
+                <span>标签：</span>
+                <a href="#" data-role="remove" v-text="checkedTag"></a>
+            </div>
+
             <template v-for="(a,index) in accidentList">
             <div class="card ">
                 <div class="card-header">
@@ -64,15 +117,35 @@
                 </div>
                 <div class="card-body">
                     <div class="mb-2">
+<!--                        :href="'javascript:accidentApp.findDataByTagId('+t.id+','+t.tag+')'"-->
 <!--                        <span class="text-left" v-for="(t,index) in a.tags" v-text="t.tag"> 泥石流</span>-->
-                        <span v-for="(t,index) in a.tags" v-text="t.tag"
-                              :class="'badge badge-pill '+bagClass[index%6]">Primary</span>
+                        <a v-for="(t,index) in a.tags" v-text="t.tag"
+                            v-on:click="findDataByTagId(t.id,t.tag)"
+                           href="#"
+
+                              :class="'badge badge-pill mx-1 '+bagClass[index%6]">Primary</a>
 
                     </div>
 
                     <div class="mb-2">
                         <p v-text="a.introduce"></p>
                     </div>
+
+                    <div class="refer mb-2" >
+                        <div v-if="a.deathNum>0"  class="mx-1 d-inline-block">
+                            <span>死亡人数:</span>
+                            <span v-text="a.deathNum">2</span>
+                        </div>
+                        <div v-if="a.missingNum>0" class="mx-1 d-inline-block">
+                            <span>失联人数:</span>
+                            <span v-text="a.missingNum">3</span>
+                        </div>
+                        <div v-if="a.injuryNum>0" class="mx-1 d-inline-block">
+                            <span>受伤人数:</span>
+                            <span v-text="a.injuryNum">1</span>
+                        </div>
+                    </div>
+
 
                     <!--            更新时间-->
                     <div class="mb-2 small text-right text-muted">
@@ -84,9 +157,9 @@
                     <div >
                         <span class="font-weight-bold">参考</span>
                     </div>
-                    <div>
+                    <div class="refer" >
 
-                        <div class="refer"  v-for="(s,index) in a.sourceUrls">
+                        <div  v-for="(s,index) in a.sourceUrls">
                             <span v-text="(index+1)+'.'"></span>
                             <a v-bind:href="s.url" v-bind:title="s.urlTitle"  target="_blank" v-text="s.urlTitle">事故1</a>
                             <span v-text="s.channel">央视新闻</span>
@@ -107,13 +180,21 @@
     </div>
 </div>
 </body>
-<script src="assets/js/jsencrypt.js"></script>
-<script src="assets/js/crypto-js.js"></script>
 
 <script>
     let accidentApp = new Vue({
         el: "#accidentId",
         data: {
+            searchParam:{
+                checkedDate:null,
+                startDate:null,
+                endDate:null,
+                tagId:null,
+                content:null
+            },
+            checkedDate:1,
+            checkedTagFlag:false,
+            checkedTag:'jk',
             bagClass:['badge-primary',
                 'badge-secondary',
                 'badge-success',
@@ -210,6 +291,27 @@
                     this.accidentList = res.data.data
                     console.log(res.data.data)
                 })
+            },
+
+            findDataByTagId:function (tagId,tagName) {
+                this.checkedTagFlag = true
+                this.checkedTag = tagName
+                axios.get('/accident/info/get/'+tagId).then(res => {
+                    this.accidentList = res.data.data
+                    console.log(res.data.data)
+                })
+            },
+
+            mixSearch:function(){
+                if (this.searchParam.checkedDate!='7'||(this.searchParam.startDate!=null&&this.searchParam.endDate!=null)){
+                    axios.get('/accident/info/mix',{
+                        params: this.searchParam
+                    }).then(res => {
+                        this.accidentList = res.data.data
+                        console.log(res.data.data)
+                    })
+                }
+
             }
         }
     })

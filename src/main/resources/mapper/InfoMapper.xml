@@ -61,6 +61,15 @@ from accident_info ai
     left join info_source i on ai.id = i.info_id
     left join channel c on i.channel_id = c.id
     where ai.status is null
+        <if test="tagId != null">
+            AND ai.id in (select atg1.info_id from accident_tag atg1 where atg1.tag_id = #{tagId})
+        </if>
+        <if test="startDate != null and endDate != null ">
+            and ai.date between #{startDate} and #{endDate}
+        </if>
+        <if test="content != null">
+            and (ai.introduce like #{content} or ai.reason like #{content})
+        </if>
 order by ai.date desc, source_date, t.id desc
 
     </select>

@@ -2,6 +2,7 @@ package com.lq.accident.mapper;
 
 import cn.hutool.core.lang.Console;
 import com.alibaba.fastjson.JSON;
+import com.lq.accident.model.dto.SearchDTO;
 import com.lq.accident.model.vo.InfoVO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ public class InfoMapperTest {
     InfoMapper infoMapper;
     @Test
     public void selectAllInfoTest(){
-        List<InfoVO> infoVOList = infoMapper.selectAllInfo();
+        List<InfoVO> infoVOList = infoMapper.selectAllInfo(new SearchDTO());
         Console.log(JSON.toJSONString(infoVOList,true));
     }
 }
