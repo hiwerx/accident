@@ -96,7 +96,8 @@
 
             <div v-if="checkedTagFlag">
                 <span>标签：</span>
-                <a href="#" data-role="remove" v-text="checkedTag"></a>
+                <span  v-text="checkedTag"></span>
+                <a href="#" v-on:click="clearTag()" ><i class="fa-solid fa-delete-left"></i></a>
             </div>
 
             <template v-for="(a,index) in accidentList">
@@ -294,12 +295,16 @@
             },
 
             findDataByTagId:function (tagId,tagName) {
+                // 展示点击的标签
                 this.checkedTagFlag = true
                 this.checkedTag = tagName
-                axios.get('/accident/info/get/'+tagId).then(res => {
-                    this.accidentList = res.data.data
-                    console.log(res.data.data)
-                })
+                // 搜索点击的标签
+                this.searchParam.tagId = tagId
+                this.mixSearch()
+                // axios.get('/accident/info/get/'+tagId).then(res => {
+                //     this.accidentList = res.data.data
+                //     console.log(res.data.data)
+                // })
             },
 
             mixSearch:function(){
@@ -312,6 +317,13 @@
                     })
                 }
 
+            },
+            clearTag:function(){
+                // 取消标签展示
+                this.checkedTagFlag=false
+                // 清除标签搜索条件
+                this.searchParam.tagId = null
+                this.mixSearch()
             }
         }
     })

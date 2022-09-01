@@ -76,7 +76,7 @@ public class InfoController {
         }else if (dateFlag.equals("7")){
             LocalDate startDate = dto.getStartDate();
             LocalDate endDate = dto.getEndDate();
-            if (startDate.compareTo(endDate)>1) {
+            if (startDate.compareTo(endDate)>0) {
                 dto.setEndDate(startDate);
                 dto.setStartDate(endDate);
             }
