@@ -1,6 +1,7 @@
 package com.lq.accident.controller;
 
 
+import cn.hutool.core.lang.Console;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.api.R;
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
@@ -98,18 +100,20 @@ public class InfoController {
                 dto.setContent("%"+dto.getContent().trim()+"%");
             }
         }
-        log.info(JSON.toJSONString(dto,true));
+//        log.info(JSON.toJSONString(dto,true));
         return R.ok(infoMapper.selectAllInfo(dto));
     }
 
     // 防止恶意投递
     @RequestMapping("/postInfo")
-    public String ui(InfoDTO infoDTO){
-        String date = DateTimeFormatter.ofPattern("yyyyMMdd").format(LocalDate.now());
-        String uuid = UUID.randomUUID().toString();
-        redisTemplate.opsForValue().set("info:"+date+":"+uuid, JSON.toJSONString(infoDTO),24, TimeUnit.HOURS);
+    public R ui(@RequestBody InfoDTO infoDTO){
+//        Console.log(JSON.toJSONString(infoDTO,true));
+        infoService.saveInfo(infoDTO);
+//        String date = DateTimeFormatter.ofPattern("yyyyMMdd").format(LocalDate.now());
+//        String uuid = UUID.randomUUID().toString();
+     //   redisTemplate.opsForValue().set("info:"+date+":"+uuid, JSON.toJSONString(infoDTO),24, TimeUnit.HOURS);
 
-        return "sdfsdg";
+        return R.ok("保存成功");
     }
 
     // 获取未读的投递消息

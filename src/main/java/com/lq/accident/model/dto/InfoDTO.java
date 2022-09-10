@@ -2,10 +2,12 @@ package com.lq.accident.model.dto;
 
 import cn.hutool.core.lang.Console;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.lq.accident.model.Info;
 import com.lq.accident.model.InfoSource;
 import lombok.*;
 import org.springframework.beans.BeanUtils;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -21,6 +23,7 @@ public class InfoDTO {
     /**
      * 发生日期
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
 
     /**
@@ -96,7 +99,8 @@ public class InfoDTO {
                 .tags(Arrays.asList("t1","t2","t3"))
                 .build();
 
-        Console.log(JSON.toJSONString(dto,true));
+//        Console.log(JSON.toJSONString(dto,true));
+        Console.log(JSON.toJSONString(new InfoDTO(), SerializerFeature.WriteMapNullValue,SerializerFeature.PrettyFormat));
         Info info = new Info();
         BeanUtils.copyProperties(dto,info);
         Console.log(JSON.toJSONString(info,true));

@@ -308,7 +308,15 @@
             },
 
             mixSearch:function(){
-                if (this.searchParam.checkedDate!='7'||(this.searchParam.startDate!=null&&this.searchParam.endDate!=null)){
+                let sendReqFlag = false;
+                if (this.searchParam.checkedDate!='7'){
+                    this.searchParam.startDate=null
+                    this.searchParam.endDate=null
+                    sendReqFlag = true
+                }else if (this.searchParam.startDate!=null&&this.searchParam.endDate!=null){
+                    sendReqFlag = true
+                }
+                if (sendReqFlag){
                     axios.get('/accident/info/mix',{
                         params: this.searchParam
                     }).then(res => {
@@ -316,7 +324,6 @@
                         console.log(res.data.data)
                     })
                 }
-
             },
             clearTag:function(){
                 // 取消标签展示
