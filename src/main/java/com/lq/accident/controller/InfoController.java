@@ -4,21 +4,20 @@ package com.lq.accident.controller;
 import cn.hutool.core.lang.Console;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.lq.accident.mapper.InfoMapper;
 import com.lq.accident.model.Info;
+import com.lq.accident.model.Tag;
 import com.lq.accident.model.dto.InfoDTO;
 import com.lq.accident.model.dto.SearchDTO;
 import com.lq.accident.model.vo.InfoVO;
+import com.lq.accident.service.ITagService;
 import com.lq.accident.service.impl.InfoServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -26,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -46,7 +46,8 @@ public class InfoController {
     InfoServiceImpl infoService;
     @Autowired
     InfoMapper infoMapper;
-
+    @Autowired
+    ITagService tagService;
     @RequestMapping("all")
     public R<List<InfoVO>> getAll(){
         return R.ok(infoMapper.selectAllInfo(new SearchDTO()));
@@ -57,6 +58,18 @@ public class InfoController {
         SearchDTO dto = new SearchDTO();
         dto.setTagId(tagId);
         return R.ok(infoMapper.selectAllInfo(dto));
+    }
+
+    @GetMapping("listBase/{infoId}")
+    public R getOneInfoById(@PathVariable Integer infoId){
+        Info info = infoService.lambdaQuery().eq(Info::getId,infoId).one();
+        JSONObject jb = JSON.parseObject(JSON.toJSONString(info));
+        List<Tag> tagList = tagService.getTagByInfoId(infoId);
+        if (tagList!=null){
+            String ts = tagList.stream().map(Tag::getTag).collect(Collectors.joining(","));
+            jb.put("ts",ts);
+        }
+        return R.ok(jb);
     }
     @RequestMapping("mix")
     public R mixSearch(SearchDTO dto){

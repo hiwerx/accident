@@ -35,10 +35,18 @@ function parsePram(){
 
 }
 
+/**
+ * <title>标签赋值
+ * @param tile
+ */
 function setTitle(tile){
     document.getElementsByTagName('title')[0].innerText=tile
 }
 
+/**
+ * 获取第一个#号后面的数据
+ * @returns {string}
+ */
 function getLabel(){
     let href = document.location.href;
     let index = href.indexOf('#')

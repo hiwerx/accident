@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>信息编辑</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Nunito:400,600,700,800|Roboto:400,500,700" rel="stylesheet">
+    <!-- Theme CSS -->
+    <link type="text/css" href="../assets/css/theme.css" rel="stylesheet">
+    <!--    <link rel="stylesheet" href="https://unpkg.com/@tabler/core@latest/dist/css/tabler.min.css">-->
+    <link rel="stylesheet" href="../assets/vendor/bootstrap/css/bootstrap.min.css">
+    <!-- fontawesome6 CSS -->
+    <link type="text/css" href="../assets/vendor/fontawesome/css/all.min.css" rel="stylesheet">
+    <!-- Core -->
+    <script src="../assets/vendor/jquery/jquery.min.js"></script>
+    <script src="../assets/vendor/popper/popper.min.js"></script>
+    <script src="../assets/js/bootstrap/bootstrap.min.js"></script>
+    <!-- Page plugins -->
+    <script src="../assets/vendor/bootstrap-select/js/bootstrap-select.min.js"></script>
+    <script src="../assets/vendor/bootstrap-tagsinput/bootstrap-tagsinput.min.js"></script>
+    <script src="../assets/vendor/input-mask/input-mask.min.js"></script>
+    <script src="../assets/vendor/nouislider/js/nouislider.min.js"></script>
+    <script src="../assets/vendor/textarea-autosize/textarea-autosize.min.js"></script>
+    <!-- Theme JS -->
+    <script src="../assets/js/theme.js"></script>
+
+    <!--    <script src="https://unpkg.com/@tabler/core@latest/dist/js/tabler.min.js"></script>-->
+    <!--引入Vue框架-->
+    <script src="../assets/vendor/vue/dist/vue.js"></script>
+    <!--引入axios框架-->
+    <script src="../assets/vendor/axios/dist/axios.min.js"></script>
+    <script src="../assets/js/myUtil.js"></script>
+
+</head>
+<style>
+    p {
+        margin: 0;
+        text-indent: 4ch;
+    }
+
+    .refer {
+        font-size: 90%;
+    }
+</style>
+<body>
+
+<div id="" class="container-fluid">
+
+    <div id="editInfoId" class="row">
+        <div class="col-xl-8 offset-xl-2">
+
+            <br>
+            <h1>信息编辑</h1>
+            <div class="form-group">
+                <label>标题</label>
+                <input v-model="info.title" type="text" class="form-control" placeholder="标题">
+            </div>
+            <div class="form-group">
+                <label>介绍</label>
+                <textarea v-model="info.introduce" class="form-control" placeholder="简述" rows="2"></textarea>
+            </div>
+            <div class="form-group">
+                <label>事故原因</label>
+                <textarea v-model="info.reason" class="form-control textarea-autosize" placeholder="事故原因"
+                          rows="1"></textarea>
+            </div>
+            <div id="tagId" class="form-group">
+                <label>标签</label>
+                <input v-model="info.ts" type="text" class="form-control" data-role="tagsinput"/>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-4">
+                    <label>事故地</label>
+                    <input v-model="info.place" type="text" class="form-control" placeholder="事故地">
+                </div>
+                <div class="form-group col-md-4">
+                    <label>事故类型</label>
+                    <select v-model="info.type" class="form-control">
+                        <option v-for="t in typeList" v-bind:value="t.id" v-text="t.name">Default select</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-4">
+                    <label>发生日期</label>
+                    <input v-model="info.date" type="date" class="form-control">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-4">
+                    <label>死亡人数</label>
+                    <input v-model="info.deathNum" type="text" class="form-control" placeholder="死亡人数">
+                </div>
+                <div class="form-group col-md-4">
+                    <label>失联人数</label>
+                    <input v-model="info.missingNum" type="text" class="form-control" placeholder="失联人数">
+                </div>
+                <div class="form-group col-md-4">
+                    <label>受伤人数</label>
+                    <input v-model="info.injuryNum" type="text" class="form-control" placeholder="受伤人数">
+                </div>
+            </div>
+            <div class="mb-2">
+            <button class="btn btn-primary" v-on:click="editInfo">提交修改</button>
+            </div>
+
+            <div id="infoSourceId" class="mb-5">
+                <div class="mb-2">
+                <label>信息来源</label>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal"
+                            data-toggle="modal" data-target="#addInfoSourceModal"
+                    >添加来源</button>
+                </div>
+                <div class="card mb-1" v-for="(source,index) in infoSource">
+                    <div class="card-header">
+                        <div>来源<span v-text="(index+1)"></span>
+                            <button class="btn btn-primary" v-on:click="delInfoSource(index)">删除</button>
+                            <button class="btn btn-primary" v-on:click="editInfoSource(index)">编辑</button>
+                        </div>
+
+                    </div>
+                    <div class="card-body">
+
+                        <div class="form-group">
+                            <label>url标题</label>
+                            <input type="text" v-model="source.urlTitle" class="form-control" placeholder="url标题">
+                        </div>
+
+                        <div class="form-group">
+                            <label>url</label>
+                            <input type="text" v-model="source.url" class="form-control" placeholder="url">
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label>来源渠道</label>
+                                <select class="form-control" v-model="source.channelId">
+                                    <option v-for="c in channelList" v-bind:value="c.id" v-text="c.channel">Default
+                                        select
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>来源发布日期</label>
+                                <input type="date" v-model="source.sourceDate" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade"  id="addInfoSourceModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">添加信息来源</h5>
+                            <button type="button" class="close" data-dismiss="modal"  aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <!--添加厂商错误提示-->
+<!--                            <div v-if="addCompanyData.resp.code!=0" class="alert alert-danger alert-dismissible fade show" role="alert">-->
+<!--                                <strong v-text="addCompanyData.resp.msg">Holy guacamole!</strong>-->
+
+<!--                            </div>-->
+                            <div class="form-group">
+                                <label>url标题</label>
+                                <input type="text" v-model="newInfoSource.urlTitle" class="form-control" placeholder="url标题">
+                            </div>
+
+                            <div class="form-group">
+                                <label>url</label>
+                                <input type="text" v-model="newInfoSource.url" class="form-control" placeholder="url">
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    <label>来源渠道</label>
+                                    <select class="form-control" v-model="newInfoSource.channelId">
+                                        <option v-for="c in channelList" v-bind:value="c.id" v-text="c.channel">Default
+                                            select
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label>来源发布日期</label>
+                                    <input type="date" v-model="newInfoSource.sourceDate" class="form-control">
+                                </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" >取消</button>
+                            <button type="button" class="btn btn-primary"  v-on:click="addInfoSource">保存</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</div>
+</body>
+
+<script>
+    let param = parsePram()
+    let infoId = param.id
+    let editInfoApp = new Vue({
+        el: "#editInfoId",
+        data: {
+            typeList: [{id: 1, name: 't1'}, {id: 2, name: 't2'}, {id: 3, name: 't3'}],
+            channelList: [{id: 1, channel: 'c1'}, {id: 2, channel: 'c2'}, {id: 3, channel: 'c3'}],
+            info: {
+                "area": null,
+                "city": null,
+                "date": '2022-11-11',
+                "deathNum": 1,
+                "injuryNum": 1,
+                "introduce": '简述',
+                "missingNum": 1,
+                "place": '未知地',
+                "province": null,
+                "reason": '未知',
+                "ts": 'hee,历史,色v',
+                "tags": [],
+                "title": '无标题',
+                "type": '2'
+            },
+            infoSource: [{
+                "channelId":1,
+                "createTime":'2022-10-11',
+                "id":1,
+                "infoId":1,
+                "sourceDate":'2022-10-11',
+                "url":'http://www.ee.com',
+                "urlTitle":'暂无标题'
+            },
+                {
+                    "channelId":2,
+                    "createTime":'2022-10-11',
+                    "id":2,
+                    "infoId":1,
+                    "sourceDate":'2022-10-11',
+                    "url":'http://www.ee.com',
+                    "urlTitle":'暂无标题'
+                }],
+            newInfoSource:{
+                "channelId":null,
+                "infoId":infoId,
+                "sourceDate":null,
+                "url":null,
+                "urlTitle":null
+            }
+        },
+        created: function () {
+            axios.get('/accident/type/list').then(res => {
+                this.typeList = res.data.data
+                // console.log(res.data.data)
+            })
+
+            axios.get('/accident/type/channelList').then(res => {
+                this.channelList = res.data.data
+                // console.log(res.data.data)
+            })
+            this.getBaseInfo()
+            this.getInfoSource()
+        },
+        methods: {
+            getBaseInfo:function(){
+                axios.get('/accident/info/listBase/'+infoId).then(res => {
+                    this.info = res.data.data
+                    // console.log(res.data.data)
+                })
+            },
+            getInfoSource:function(){
+                axios.get('/accident/infoSource/list/'+infoId).then(res => {
+                    this.infoSource = res.data.data
+                    // console.log(res.data.data)
+                })
+            },
+            // 添加信息来源
+            addInfoSource: function () {
+                axios.request({
+                    url: '/accident/infoSource/add',
+                    method: 'post',
+                    data: this.newInfoSource
+                }).then(res => {
+                    let dat = res.data
+                    console.log(dat.data)
+                    // 给响应数据赋值
+                    if (dat.code == 0) {
+                        // 隐藏模态框
+                        $('#addInfoSourceModal').modal('hide')
+                        // 加入数据来源
+                        this.infoSource.push(dat.data)
+
+                    }
+                })
+            },
+            delInfoSource: function (i) {
+                axios.request({
+                    url: '/accident/infoSource/del/'+this.infoSource[i].id,
+                    method: 'post'
+                }).then(res => {
+                    let dat = res.data
+                    console.log(dat.data)
+                    // 给响应数据赋值
+                    if (dat.code == 0) {
+                        // 删除成功移除i位置元素
+                        this.infoSource.splice(i, 1)
+                    }
+                })
+            },
+            editInfoSource: function (i) {
+                let reqData =  this.infoSource[i]
+                reqData.createTime = null
+                axios.request({
+                    url: '/accident/infoSource/update',
+                    method: 'post',
+                    data: reqData
+                }).then(res => {
+                    let dat = res.data
+                    console.log(dat.data)
+                    // 给响应数据赋值
+                    if (dat.code == 0) {
+                        // 将i位置的数据更新
+                        //this.infoSource[i] = dat.data
+                    }
+                })
+            },
+            editInfo: function () {
+                let tagEls = $("#tagId span.badge.badge-primary")
+                if (tagEls != null && tagEls.length > 0) {
+                    // 清空标签
+                    this.info.tags = []
+                    for (let i = 0; i < tagEls.length; i++) {
+                        this.info.tags.push(tagEls[i].innerText)
+                    }
+                }
+                // console.log(this.info)
+                axios.request({
+                    url: '/accident/info/edit',
+                    method: 'post',
+                    data: this.info
+                }).then(res => {
+                    let dat = res.data
+                    console.log(dat.data)
+                    // 给响应数据赋值
+                    if (dat.code == 0) {
+                        // 页面跳转至首页
+                      //  location.href = "/admin/index.html"
+                    }
+                })
+            }
+        }
+    })
+</script>
+</html>

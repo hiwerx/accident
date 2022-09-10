@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito:400,600,700,800|Roboto:400,500,700" rel="stylesheet">
     <!-- Theme CSS -->
     <link type="text/css" href="../assets/css/theme.css" rel="stylesheet">
-<!--    <link rel="stylesheet" href="https://unpkg.com/@tabler/core@latest/dist/css/tabler.min.css">-->
+    <!--    <link rel="stylesheet" href="https://unpkg.com/@tabler/core@latest/dist/css/tabler.min.css">-->
     <link rel="stylesheet" href="../assets/vendor/bootstrap/css/bootstrap.min.css">
     <!-- fontawesome6 CSS -->
     <link type="text/css" href="../assets/vendor/fontawesome/css/all.min.css" rel="stylesheet">
@@ -25,7 +25,7 @@
     <!-- Theme JS -->
     <script src="../assets/js/theme.js"></script>
 
-<!--    <script src="https://unpkg.com/@tabler/core@latest/dist/js/tabler.min.js"></script>-->
+    <!--    <script src="https://unpkg.com/@tabler/core@latest/dist/js/tabler.min.js"></script>-->
     <!--引入Vue框架-->
     <script src="../assets/vendor/vue/dist/vue.js"></script>
     <!--引入axios框架-->
@@ -37,7 +37,8 @@
         margin: 0;
         text-indent: 4ch;
     }
-    .refer{
+
+    .refer {
         font-size: 90%;
     }
 </style>
@@ -51,52 +52,60 @@
             <br>
             <h1>添加信息</h1>
             <div class="form-group">
-                <label >标题</label>
+                <label>标题</label>
                 <input v-model="addInfoReq.title" type="text" class="form-control" placeholder="标题">
-            </div>
-
-            <div class="form-group">
-                <label>发生日期</label>
-                <input v-model="addInfoReq.date" type="date" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>事故地</label>
-                <input v-model="addInfoReq.place" type="text" class="form-control" placeholder="事故地">
             </div>
             <div class="form-group">
                 <label>介绍</label>
                 <textarea v-model="addInfoReq.introduce" class="form-control" placeholder="简述" rows="2"></textarea>
             </div>
             <div class="form-group">
-                <label>死亡人数</label>
-                <input v-model="addInfoReq.deathNum" type="text" class="form-control" placeholder="死亡人数">
-            </div>
-            <div class="form-group">
-                <label>失联人数</label>
-                <input v-model="addInfoReq.missingNum" type="text" class="form-control" placeholder="失联人数">
-            </div>
-            <div class="form-group">
-                <label>受伤人数</label>
-                <input v-model="addInfoReq.injuryNum" type="text" class="form-control" placeholder="受伤人数">
-            </div>
-            <div class="form-group">
-                <label>事故类型</label>
-            <select v-model="addInfoReq.type" class="form-control">
-                <option v-for="t in typeList" v-bind:value="t.id" v-text="t.name">Default select</option>
-            </select>
-            </div>
-            <div class="form-group">
                 <label>事故原因</label>
-                <textarea v-model="addInfoReq.reason" class="form-control textarea-autosize" placeholder="事故原因" rows="1"></textarea>
+                <textarea v-model="addInfoReq.reason" class="form-control textarea-autosize" placeholder="事故原因"
+                          rows="1"></textarea>
             </div>
             <div id="tagId" class="form-group">
                 <label>标签</label>
-                <input v-model="addInfoReq.ts" type="text" class="form-control" data-role="tagsinput" />
+                <input v-model="addInfoReq.ts" type="text" class="form-control" data-role="tagsinput"/>
             </div>
+            <div class="row">
+                <div class="form-group col-md-4">
+                    <label>事故地</label>
+                    <input v-model="addInfoReq.place" type="text" class="form-control" placeholder="事故地">
+                </div>
+                <div class="form-group col-md-4">
+                    <label>事故类型</label>
+                    <select v-model="addInfoReq.type" class="form-control">
+                        <option v-for="t in typeList" v-bind:value="t.id" v-text="t.name">Default select</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-4">
+                    <label>发生日期</label>
+                    <input v-model="addInfoReq.date" type="date" class="form-control">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-4">
+                    <label>死亡人数</label>
+                    <input v-model="addInfoReq.deathNum" type="text" class="form-control" placeholder="死亡人数">
+                </div>
+                <div class="form-group col-md-4">
+                    <label>失联人数</label>
+                    <input v-model="addInfoReq.missingNum" type="text" class="form-control" placeholder="失联人数">
+                </div>
+                <div class="form-group col-md-4">
+                    <label>受伤人数</label>
+                    <input v-model="addInfoReq.injuryNum" type="text" class="form-control" placeholder="受伤人数">
+                </div>
+            </div>
+
+
             <div id="infoSourceId">
+                <label>信息来源</label>
                 <div class="card" v-for="(source,index) in addInfoReq.sourceUrls">
                     <div class="card-header">
-                        <div >来源<span v-text="(index+1)"></span>
+                        <div>来源<span v-text="(index+1)"></span>
                             <button class="btn btn-primary" v-on:click="delInfoSourceTag(index)">移除</button>
 
                         </div>
@@ -105,36 +114,40 @@
                     <div class="card-body">
 
                         <div class="form-group">
-                    <label >url标题</label>
-                    <input type="text" v-model="source.urlTitle" class="form-control" placeholder="url标题">
-                </div>
+                            <label>url标题</label>
+                            <input type="text" v-model="source.urlTitle" class="form-control" placeholder="url标题">
+                        </div>
 
-                <div class="form-group">
-                    <label>来源发布日期</label>
-                    <input type="date" v-model="source.sourceDate" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label>url</label>
-                    <input type="text" v-model="source.url" class="form-control" placeholder="url">
-                </div>
-                <div class="form-group">
-                    <label>来源</label>
-                    <select class="form-control" v-model="source.channelId">
-                        <option v-for="c in channelList" v-bind:value="c.id" v-text="c.channel">Default select</option>
-                    </select>
-                </div>
 
+                        <div class="form-group">
+                            <label>url</label>
+                            <input type="text" v-model="source.url" class="form-control" placeholder="url">
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label>来源渠道</label>
+                                <select class="form-control" v-model="source.channelId">
+                                    <option v-for="c in channelList" v-bind:value="c.id" v-text="c.channel">Default
+                                        select
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>来源发布日期</label>
+                                <input type="date" v-model="source.sourceDate" class="form-control">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
             <div>
-            <button class="btn btn-primary" v-on:click="addInfoSourceTag">添加来源</button>
+                <button class="btn btn-primary" v-on:click="addInfoSourceTag">添加来源</button>
             </div>
             <button class="btn btn-primary" v-on:click="addInfoData">提交</button>
         </div>
 
     </div>
-    </div>
+</div>
 </div>
 </body>
 
@@ -142,27 +155,25 @@
     let addInfoApp = new Vue({
         el: "#addInfoId",
         data: {
-            typeList:[{id:1,name:'t1'},{id:2,name:'t2'},{id:3,name:'t3'}],
-            channelList:[{id:1,channel:'c1'},{id:2,channel:'c2'},{id:3,channel:'c3'}],
-            addInfoReq:{
-                "area":null,
-                "city":null,
-                "date":null,
-                "deathNum":null,
-                "injuryNum":null,
-                "introduce":null,
-                "missingNum":null,
-                "place":null,
-                "province":null,
-                "reason":null,
-                "sourceUrls":[],
-                "tags":[],
-                "title":null,
-                "type":null
+            typeList: [{id: 1, name: 't1'}, {id: 2, name: 't2'}, {id: 3, name: 't3'}],
+            channelList: [{id: 1, channel: 'c1'}, {id: 2, channel: 'c2'}, {id: 3, channel: 'c3'}],
+            addInfoReq: {
+                "area": null,
+                "city": null,
+                "date": null,
+                "deathNum": null,
+                "injuryNum": null,
+                "introduce": null,
+                "missingNum": null,
+                "place": null,
+                "province": null,
+                "reason": null,
+                "sourceUrls": [],
+                "tags": [],
+                "title": null,
+                "type": null
             },
-            addInfoResp:{
-
-            }
+            addInfoResp: {}
         },
         created: function () {
             axios.get('/accident/type/list').then(res => {
@@ -181,18 +192,18 @@
              * https://blog.csdn.net/qq_24806045/article/details/85279034
              * https://www.jianshu.com/p/8f6495db917e
              */
-            addInfoSourceTag:function(){
-                let obj = {url:null,urlTitle:null,channelId:null,sourceDate:null}
+            addInfoSourceTag: function () {
+                let obj = {url: null, urlTitle: null, channelId: null, sourceDate: null}
                 this.addInfoReq.sourceUrls.push(obj)
             },
-            delInfoSourceTag:function(i){
-                this.addInfoReq.sourceUrls.splice(i,1)
+            delInfoSourceTag: function (i) {
+                this.addInfoReq.sourceUrls.splice(i, 1)
             },
-            addInfoData: function(){
+            addInfoData: function () {
                 let tagEls = $("#tagId span.badge.badge-primary")
-                if (tagEls!=null&&tagEls.length>0){
+                if (tagEls != null && tagEls.length > 0) {
                     // 清空标签
-                    this.addInfoReq.tags=[]
+                    this.addInfoReq.tags = []
                     for (let i = 0; i < tagEls.length; i++) {
                         this.addInfoReq.tags.push(tagEls[i].innerText)
                     }
@@ -206,9 +217,9 @@
                     let dat = res.data
                     console.log(dat.data)
                     // 给响应数据赋值
-                    if (dat.code==0){
-                       // 页面跳转至首页
-                        location.href="/admin/index.html"
+                    if (dat.code == 0) {
+                        // 页面跳转至首页
+                        location.href = "/admin/index.html"
                     }
                 })
             }
