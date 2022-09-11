@@ -20,7 +20,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -68,9 +70,19 @@ public class InfoController {
         if (tagList!=null){
             String ts = tagList.stream().map(Tag::getTag).collect(Collectors.joining(","));
             jb.put("ts",ts);
+            jb.put("tags",tagList);
+        }else {
+            // 给个空数组避免前端无法获取tags值报错
+            jb.put("tags",new ArrayList<Tag>());
         }
         return R.ok(jb);
     }
+
+    /**
+     * 多重搜索
+     * @param dto
+     * @return
+     */
     @RequestMapping("mix")
     public R mixSearch(SearchDTO dto){
 
@@ -117,7 +129,11 @@ public class InfoController {
         return R.ok(infoMapper.selectAllInfo(dto));
     }
 
-    // 防止恶意投递
+    /**
+     * 混合保存（基本信息，标签，来源）
+     * @param infoDTO
+     * @return
+     */
     @RequestMapping("/postInfo")
     public R ui(@RequestBody InfoDTO infoDTO){
 //        Console.log(JSON.toJSONString(infoDTO,true));
@@ -127,6 +143,21 @@ public class InfoController {
      //   redisTemplate.opsForValue().set("info:"+date+":"+uuid, JSON.toJSONString(infoDTO),24, TimeUnit.HOURS);
 
         return R.ok("保存成功");
+    }
+
+    /**
+     * 更新基本信息
+     * @param info
+     * @return
+     */
+    @PostMapping("update")
+    public R updateInfo(@RequestBody Info info){
+        if (info.getId()==null){
+            return R.failed("信息不全，更新失败");
+        }
+        info.setUpdateTime(LocalDateTime.now());
+        infoService.updateById(info);
+        return R.ok("更新成功");
     }
 
     // 获取未读的投递消息

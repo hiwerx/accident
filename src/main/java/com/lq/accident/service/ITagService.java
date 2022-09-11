@@ -17,4 +17,6 @@ public interface ITagService extends IService<Tag> {
 
     List<Tag> getTagByInfoId(Integer infoId);
 
+    List<Tag> saveTag(List<String> tagList, Integer infoId);
+
 }

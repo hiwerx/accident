@@ -65,10 +65,7 @@
                 <textarea v-model="info.reason" class="form-control textarea-autosize" placeholder="事故原因"
                           rows="1"></textarea>
             </div>
-            <div id="tagId" class="form-group">
-                <label>标签</label>
-                <input v-model="info.ts" type="text" class="form-control" data-role="tagsinput"/>
-            </div>
+
             <div class="row">
                 <div class="form-group col-md-4">
                     <label>事故地</label>
@@ -103,8 +100,24 @@
             <div class="mb-2">
             <button class="btn btn-primary" v-on:click="editInfo">提交修改</button>
             </div>
+<!--            标签部分-->
+            <div id="tagId" class="form-group">
 
-            <div id="infoSourceId" class="mb-5">
+                <div v-if="info.tags.length>0">
+                    <label>标签</label>
+                    <span class="badge badge-info mx-1" v-for="(t,index) in info.tags">{{t.tag}}
+                        <a :href="'javascript:editInfoApp.delTag('+index+')'" class="mx-1" title="删除">x</a>
+                    </span>
+                </div>
+                <div>
+                    <label>新增标签</label>
+                    <input type="text" class="form-control" data-role="tagsinput"/>
+                    <button class="btn btn-primary" v-on:click="saveTag">保存</button>
+                </div>
+            </div>
+
+<!--            来源部分-->
+            <div id="infoSourceId" class="mb-3">
                 <div class="mb-2">
                 <label>信息来源</label>
                     <button type="button" class="btn btn-primary" data-dismiss="modal"
@@ -115,7 +128,8 @@
                     <div class="card-header">
                         <div>来源<span v-text="(index+1)"></span>
                             <button class="btn btn-primary" v-on:click="delInfoSource(index)">删除</button>
-                            <button class="btn btn-primary" v-on:click="editInfoSource(index)">编辑</button>
+                            <button class="btn btn-primary" v-on:click="editInfoSource(index)">确认修改</button>
+                            <a class="btn btn-primary" :href="source.url"  target="_blank">访问</a>
                         </div>
 
                     </div>
@@ -219,7 +233,7 @@
                 "place": '未知地',
                 "province": null,
                 "reason": '未知',
-                "ts": 'hee,历史,色v',
+                "ts": '',
                 "tags": [],
                 "title": '无标题',
                 "type": '2'
@@ -264,16 +278,59 @@
             this.getInfoSource()
         },
         methods: {
+            delTag:function(index){
+                axios.request({
+                    url: '/accident/tag/delInfoTag/'+infoId+'/'+this.info.tags[index].id,
+                    method: 'post'
+                }).then(res => {
+                    let dat = res.data
+                    console.log(dat.data)
+                    // 给响应数据赋值
+                    if (dat.code == 0) {
+                        // 删除成功移除tag列表i位置元素
+                        this.info.tags.splice(index, 1)
+                    }
+                })
+            },
+            saveTag:function(){
+                let tagEls = $("#tagId span.badge.badge-primary")
+                let tagReqParam = []
+                if (tagEls != null && tagEls.length > 0) {
+                    for (let i = 0; i < tagEls.length; i++) {
+                        tagReqParam.push(tagEls[i].innerText)
+
+                    }
+                }else {
+                    console.log("未获取到数据")
+                    return
+                }
+                axios.request({
+                    url: '/accident/tag/save/'+infoId,
+                    method: 'post',
+                    data: tagReqParam
+                }).then(res => {
+                    let dat = res.data
+                    console.log(dat.data)
+                    if (dat.code == 0) {
+                        // 清空输入框
+                        $("span").remove(".badge.badge-primary");
+                        // 把保存的数据加到标签中
+                        if (dat.data!=null&&dat.data.length>0){
+                            for (let i = 0; i < dat.data.length; i++) {
+                                this.info.tags.push(dat.data[i])
+                            }
+                        }
+                    }
+                })
+            },
             getBaseInfo:function(){
                 axios.get('/accident/info/listBase/'+infoId).then(res => {
                     this.info = res.data.data
-                    // console.log(res.data.data)
                 })
             },
             getInfoSource:function(){
                 axios.get('/accident/infoSource/list/'+infoId).then(res => {
                     this.infoSource = res.data.data
-                    // console.log(res.data.data)
                 })
             },
             // 添加信息来源
@@ -327,17 +384,10 @@
                 })
             },
             editInfo: function () {
-                let tagEls = $("#tagId span.badge.badge-primary")
-                if (tagEls != null && tagEls.length > 0) {
-                    // 清空标签
-                    this.info.tags = []
-                    for (let i = 0; i < tagEls.length; i++) {
-                        this.info.tags.push(tagEls[i].innerText)
-                    }
-                }
+
                 // console.log(this.info)
                 axios.request({
-                    url: '/accident/info/edit',
+                    url: '/accident/info/update',
                     method: 'post',
                     data: this.info
                 }).then(res => {
