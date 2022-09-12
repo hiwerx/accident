@@ -5,13 +5,19 @@ import cn.hutool.core.lang.Console;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.api.R;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lq.accident.mapper.InfoMapper;
+import com.lq.accident.model.AccidentTag;
 import com.lq.accident.model.Info;
+import com.lq.accident.model.InfoSource;
 import com.lq.accident.model.Tag;
 import com.lq.accident.model.dto.InfoDTO;
 import com.lq.accident.model.dto.SearchDTO;
 import com.lq.accident.model.vo.InfoVO;
+import com.lq.accident.service.IAccidentTagService;
+import com.lq.accident.service.IInfoSourceService;
 import com.lq.accident.service.ITagService;
 import com.lq.accident.service.impl.InfoServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +33,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -50,6 +57,10 @@ public class InfoController {
     InfoMapper infoMapper;
     @Autowired
     ITagService tagService;
+    @Autowired
+    IAccidentTagService accidentTagService;
+    @Autowired
+    IInfoSourceService sourceService;
     @RequestMapping("all")
     public R<List<InfoVO>> getAll(){
         return R.ok(infoMapper.selectAllInfo(new SearchDTO()));
@@ -65,6 +76,7 @@ public class InfoController {
     @GetMapping("listBase/{infoId}")
     public R getOneInfoById(@PathVariable Integer infoId){
         Info info = infoService.lambdaQuery().eq(Info::getId,infoId).one();
+        if (info==null) return R.failed("未查询到相关信息");
         JSONObject jb = JSON.parseObject(JSON.toJSONString(info));
         List<Tag> tagList = tagService.getTagByInfoId(infoId);
         if (tagList!=null){
@@ -85,7 +97,17 @@ public class InfoController {
      */
     @RequestMapping("mix")
     public R mixSearch(SearchDTO dto){
+        // 参数校验
+        initSearchDTO(dto);
+        if(dto.getContent()!=null)dto.setContent("%"+dto.getContent().trim()+"%");
+        return R.ok(infoMapper.selectAllInfo(dto));
+    }
 
+    /**
+     * 优化搜索请求参数
+     * @param dto
+     */
+    public void initSearchDTO(SearchDTO dto){
         // 参数校验
         /**
          * <option value="1">全部</option>
@@ -120,14 +142,35 @@ public class InfoController {
             dto.setContent(null);
         }else {
             if (!dto.getContent().matches("[\\w\\u4e00-\\u9fa5]{0,16}")){
-                return R.failed("搜索文本仅支持汉字数字和英文字母");
+                throw new RuntimeException("搜索文本仅支持汉字数字和英文字母");
             }else{
-                dto.setContent("%"+dto.getContent().trim()+"%");
+                dto.setContent(dto.getContent().trim());
             }
         }
-//        log.info(JSON.toJSONString(dto,true));
-        return R.ok(infoMapper.selectAllInfo(dto));
     }
+
+    @GetMapping("adminSearch")
+    public R adminSearch(SearchDTO searchDTO){
+        initSearchDTO(searchDTO);
+        List<Info> infoList = infoService.lambdaQuery()
+                .select(Info::getId,Info::getTitle)
+                .between(searchDTO.getStartDate()!=null&&searchDTO.getEndDate()!=null,
+                        Info::getDate,
+                        searchDTO.getStartDate(),searchDTO.getEndDate())
+                .and(searchDTO.getContent()!=null,
+                        (qr)-> qr.like(Info::getIntroduce,searchDTO.getContent())
+                                .or()
+                                .like(Info::getTitle,searchDTO.getContent())
+                                .or()
+                                .like(Info::getPlace,searchDTO.getContent())
+                )
+                .orderByDesc(Info::getDate)
+                .list();
+        Console.log(infoList);
+        return R.ok(infoList);
+    }
+
+
 
     /**
      * 混合保存（基本信息，标签，来源）
@@ -160,6 +203,17 @@ public class InfoController {
         return R.ok("更新成功");
     }
 
+    @PostMapping("del/{infoId}")
+    public R delInfo(@PathVariable Integer infoId){
+        log.info(infoId+"");
+        // 删除info
+        infoService.removeById(infoId);
+        // 删除tag关联
+        accidentTagService.remove(new LambdaQueryWrapper<AccidentTag>().eq(AccidentTag::getInfoId,infoId));
+        // 删除来源
+        sourceService.remove(new LambdaQueryWrapper<InfoSource>().eq(InfoSource::getInfoId,infoId));
+        return R.ok("删除成功");
+    }
     // 获取未读的投递消息
     public void getInfo(){
         String date = DateTimeFormatter.ofPattern("yyyyMMdd").format(LocalDate.now());

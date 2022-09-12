@@ -51,7 +51,12 @@
         <div class="col-xl-8 offset-xl-2">
 
             <br>
-            <h1>信息编辑</h1>
+            <div class="row mb-3">
+                <h2 class="col-md-8">信息编辑</h2>
+                <div class="col-md-4 text-right">
+                    <a class="btn btn-primary" href="index.html">返回首页</a>
+                </div>
+            </div>
             <div class="form-group">
                 <label>标题</label>
                 <input v-model="info.title" type="text" class="form-control" placeholder="标题">
@@ -119,7 +124,7 @@
 <!--            来源部分-->
             <div id="infoSourceId" class="mb-3">
                 <div class="mb-2">
-                <label>信息来源</label>
+                    <label>信息来源共计<span v-text="infoSource.length"></span>个</label>
                     <button type="button" class="btn btn-primary" data-dismiss="modal"
                             data-toggle="modal" data-target="#addInfoSourceModal"
                     >添加来源</button>
@@ -380,6 +385,7 @@
                     if (dat.code == 0) {
                         // 将i位置的数据更新
                         //this.infoSource[i] = dat.data
+                        alert("更新成功！")
                     }
                 })
             },

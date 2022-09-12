@@ -50,7 +50,12 @@
         <div class="col-xl-8 offset-xl-2">
 
             <br>
-            <h1>添加信息</h1>
+            <div class="row mb-3">
+                <h2 class="col-md-8">添加信息</h2>
+                <div class="col-md-4 text-right">
+                    <a class="btn btn-primary" href="index.html">返回首页</a>
+                </div>
+            </div>
             <div class="form-group">
                 <label>标题</label>
                 <input v-model="addInfoReq.title" type="text" class="form-control" placeholder="标题">
@@ -101,9 +106,12 @@
             </div>
 
 
-            <div id="infoSourceId">
+            <div id="infoSourceId" class="mb-3">
+                <div class="mb-2">
                 <label>信息来源</label>
-                <div class="card" v-for="(source,index) in addInfoReq.sourceUrls">
+                <button class="btn btn-primary" v-on:click="addInfoSourceTag">添加来源</button>
+                </div>
+                <div class="card mb-1" v-for="(source,index) in addInfoReq.sourceUrls">
                     <div class="card-header">
                         <div>来源<span v-text="(index+1)"></span>
                             <button class="btn btn-primary" v-on:click="delInfoSourceTag(index)">移除</button>
@@ -140,14 +148,11 @@
                     </div>
                 </div>
             </div>
-            <div>
-                <button class="btn btn-primary" v-on:click="addInfoSourceTag">添加来源</button>
+            <div class="text-center mb-4">
+            <button class="btn btn-primary btn-block" v-on:click="addInfoData">提交</button>
             </div>
-            <button class="btn btn-primary" v-on:click="addInfoData">提交</button>
         </div>
-
     </div>
-</div>
 </div>
 </body>
 
