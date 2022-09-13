@@ -30,7 +30,7 @@
     <script src="../assets/vendor/vue/dist/vue.js"></script>
     <!--引入axios框架-->
     <script src="../assets/vendor/axios/dist/axios.min.js"></script>
-
+    <script src="../assets/js/myUtil.js"></script>
 </head>
 <style>
     p {
@@ -96,7 +96,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-for="(a,index) in accidentList"
+                <tr v-for="(a,index) in page.records"
                     class="bg-white" scope="row">
                     <td v-text="index+1"></td>
                     <td v-text="a.title">nabiha.armstrong@example.com</td>
@@ -131,6 +131,16 @@
                 </div>
             </div>
 
+            <nav v-if="page.pages>1" aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" v-if="page.current > 1"><a class="page-link" href="#"  v-on:click="pageSearch(page.current-1)"><i class="fas fa-angle-left"></i></a></li>
+                    <li v-for="p in page.pageNums" v-bind:class="'page-item '+(p==page.current?'active':'')" ><a class="page-link" href="#" v-on:click="pageSearch(p)" v-text="p">1</a></li>
+<!--                    <li class="page-item active"><a class="page-link" href="#">2</a></li>-->
+
+                    <li class="page-item" v-if="page.current < page.pages"><a class="page-link " href="#"><i class="fas fa-angle-right"  v-on:click="pageSearch(page.current+1)"></i></a></li>
+                </ul>
+            </nav>
+
         </div>
     </div>
 </div>
@@ -155,12 +165,47 @@
                     "title": '龙槽沟山洪事件',
                     "id": "2",
                 }
-                ]
+                ],
+            page:{
+                "current":2,
+                "hitCount":false,
+                "optimizeCountSql":true,
+                "orders":[],
+                "pageNums":[
+                    1,
+                    2,
+                    3
+                ],
+                "pages":3,
+                "records":[
+                    {
+                        "id":4,
+                        "title":"浙江龙游衢江河道意外溺水事件",
+                    },
+                    {
+                        "id":5,
+                        "title":"3·21东航客机事故",
+                    },
+                    {
+                        "id":6,
+                        "title":"4·29长沙楼房坍塌事故"
+                    }
+                ],
+                "searchCount":true,
+                "size":3,
+                "total":9
+            }
         },
         created: function () {
-            this.mixSearch()
+            this.pageSearch(1)
+            //this.mixSearch()
         },
         methods: {
+
+            pageSearch:function(pageNum){
+                this.searchParam.pageNum = pageNum
+                this.mixSearch()
+            },
 
             mixSearch:function(){
                 let sendReqFlag = false;
@@ -175,8 +220,12 @@
                     axios.get('/accident/info/adminSearch',{
                         params: this.searchParam
                     }).then(res => {
-                        this.accidentList = res.data.data
+                        // this.accidentList = res.data.data
                         console.log(res.data.data)
+                        this.page = res.data.data
+
+                        // 起始页数重置为1
+                        this.searchParam.pageNum = 1
                     })
                 }
             },

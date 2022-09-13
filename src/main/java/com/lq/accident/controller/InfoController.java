@@ -15,6 +15,7 @@ import com.lq.accident.model.InfoSource;
 import com.lq.accident.model.Tag;
 import com.lq.accident.model.dto.InfoDTO;
 import com.lq.accident.model.dto.SearchDTO;
+import com.lq.accident.model.page.MyPage;
 import com.lq.accident.model.vo.InfoVO;
 import com.lq.accident.service.IAccidentTagService;
 import com.lq.accident.service.IInfoSourceService;
@@ -109,6 +110,7 @@ public class InfoController {
      */
     public void initSearchDTO(SearchDTO dto){
         // 参数校验
+        if (dto.getPageNum()==null)dto.setPageNum(1);
         /**
          * <option value="1">全部</option>
          * <option value="2">当月</option>
@@ -152,22 +154,38 @@ public class InfoController {
     @GetMapping("adminSearch")
     public R adminSearch(SearchDTO searchDTO){
         initSearchDTO(searchDTO);
-        List<Info> infoList = infoService.lambdaQuery()
-                .select(Info::getId,Info::getTitle)
+        MyPage<Info> myPage = new MyPage<>(searchDTO.getPageNum(),3);
+        // select * from ddd where date between * and * and (introduce like * or title like*);
+        infoService.page(myPage,new LambdaQueryWrapper<Info>().select(Info::getId,Info::getTitle)
                 .between(searchDTO.getStartDate()!=null&&searchDTO.getEndDate()!=null,
                         Info::getDate,
                         searchDTO.getStartDate(),searchDTO.getEndDate())
-                .and(searchDTO.getContent()!=null,
-                        (qr)-> qr.like(Info::getIntroduce,searchDTO.getContent())
-                                .or()
-                                .like(Info::getTitle,searchDTO.getContent())
-                                .or()
-                                .like(Info::getPlace,searchDTO.getContent())
+                .and(searchDTO.getContent()!=null,(qw)->
+                    qw.like(Info::getIntroduce,searchDTO.getContent())
+                            .or()
+                            .like(Info::getTitle,searchDTO.getContent())
+                            .or()
+                            .like(Info::getPlace,searchDTO.getContent())
                 )
                 .orderByDesc(Info::getDate)
-                .list();
-        Console.log(infoList);
-        return R.ok(infoList);
+        );
+//        List<Info> infoList = infoService.lambdaQuery()
+//                .select(Info::getId,Info::getTitle)
+//                .between(searchDTO.getStartDate()!=null&&searchDTO.getEndDate()!=null,
+//                        Info::getDate,
+//                        searchDTO.getStartDate(),searchDTO.getEndDate())
+//                .and(searchDTO.getContent()!=null,
+//                        (qr)-> qr.like(Info::getIntroduce,searchDTO.getContent())
+//                                .or()
+//                                .like(Info::getTitle,searchDTO.getContent())
+//                                .or()
+//                                .like(Info::getPlace,searchDTO.getContent())
+//                )
+//                .orderByDesc(Info::getDate)
+//                .list();
+        myPage.setSelf();
+        Console.log(myPage);
+        return R.ok(myPage);
     }
 
 

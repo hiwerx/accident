@@ -16,21 +16,20 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 @Slf4j
 @EnableConfigurationProperties(RedisProperties.class)
 public class RedisConfig {
-    @Bean
+    @Bean("factory1")
     public LettuceConnectionFactory getRedisConnectionFactory(RedisProperties redisProperties){
 //        LettuceConnectionFactory factory = new LettuceConnectionFactory("120.48.105.135",9763);
         RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration(redisProperties.getHost(),redisProperties.getPort());
         if (StrUtil.isNotEmpty(redisProperties.getPassword()))
             configuration.setPassword(redisProperties.getPassword());
         LettuceConnectionFactory factory = new LettuceConnectionFactory(configuration);
-
         return factory;
     }
 
     @Bean
-    public RedisTemplate<String,String> redisTemplate(RedisConnectionFactory factory){
+    public RedisTemplate<String,String> redisTemplate(RedisConnectionFactory factory1){
         RedisTemplate redisTemplate = new StringRedisTemplate();
-        redisTemplate.setConnectionFactory(factory);
+        redisTemplate.setConnectionFactory(factory1);
         return redisTemplate;
     }
 }

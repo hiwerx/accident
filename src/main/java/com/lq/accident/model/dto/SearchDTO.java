@@ -15,4 +15,5 @@ public class SearchDTO {
     private LocalDate endDate;
     private Integer tagId;
     private String content;
+    private Integer pageNum;
 }
