@@ -66,9 +66,9 @@
                 <span>自定义区间：</span>
                 </div>
                 <div class="col-md-10">
-                <input type="date" v-model="searchParam.startDate" v-on:change="mixSearch()">
+                <input type="date" v-model="searchParam.startDate" v-on:change="pageSearch(1)">
                 <span>--</span>
-                <input type="date" v-model="searchParam.endDate" v-on:change="mixSearch()">
+                <input type="date" v-model="searchParam.endDate" v-on:change="pageSearch(1)">
                 </div>
             </div>
             <div class="form-group sticky-top">
@@ -77,7 +77,7 @@
                     <div class="input-group-prepend">
                         <select class="selectpicker" name="checkedDate"
                                 v-model="searchParam.checkedDate"
-                                v-on:change="mixSearch()">
+                                v-on:change="pageSearch(1)">
                             <option value="1">全部</option>
                             <option value="2">当月</option>
                             <option value="3">上月至今</option>
@@ -87,7 +87,7 @@
                             <option value="7">自定义</option>
                         </select>
                     </div>
-                    <input type="text" class="form-control"  placeholder="搜索" v-model="searchParam.content" v-on:change="mixSearch">
+                    <input type="text" class="form-control"  placeholder="搜索" v-model="searchParam.content" v-on:change="pageSearch(1)">
                     <div class="input-group-append">
                         <span class="input-group-text"><i class="fas fa-search"></i></span>
                     </div>
@@ -100,7 +100,7 @@
                 <a href="#" v-on:click="clearTag()" ><i class="fa-solid fa-delete-left"></i></a>
             </div>
 
-            <template v-for="(a,index) in accidentList">
+            <template v-for="(a,index) in page.records">
             <div class="card ">
                 <div class="card-header">
 
@@ -175,6 +175,24 @@
             </div>
                 <br>
             </template>
+<!--页码导航模块-->
+            <nav v-if="page.pages>1" aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" v-if="!page.firstPage"><a class="page-link" href="#"  v-on:click="pageSearch(1)">首页</i></a></li>
+
+                    <li class="page-item" v-if="page.hasPreviousPage"><a class="page-link" href="#"  v-on:click="pageSearch(page.prePage)"><i class="fas fa-angle-left"></i></a></li>
+                    <li v-for="p in page.pageNums" v-bind:class="'page-item '+(p==page.current?'active':'d-none d-md-block')" ><a class="page-link" href="#" v-on:click="pageSearch(p)" v-text="p">1</a></li>
+                    <!--                    <li class="page-item active"><a class="page-link" href="#">2</a></li>-->
+
+                    <li class="page-item" v-if="page.hasNextPage"><a class="page-link " href="#" v-on:click="pageSearch(page.nextPage)"><i class="fas fa-angle-right"  ></i></a></li>
+
+                    <li class="page-item" v-if="!page.lastPage"><a class="page-link" href="#"  v-on:click="pageSearch(page.pages)">尾页</i></a></li>
+
+                    <li ><a class="page-link  d-none d-md-block" v-on:click="targetPageSearch">调转至</a></li>
+                    <li ><input class="page-link  d-none d-md-block" v-model="targetPage" v-on:change="targetPageSearch" size="1" type="text"></li>
+                </ul>
+            </nav>
+
         </div>
 
     </div>
@@ -186,6 +204,8 @@
     let accidentApp = new Vue({
         el: "#accidentId",
         data: {
+            targetPage:null,// 自定义跳转页
+            tagClickBeforePage:null,//保存tag点击前页号
             searchParam:{
                 checkedDate:null,
                 startDate:null,
@@ -203,6 +223,22 @@
                 'badge-warning',
                 'badge-info'
             ],
+            page:{
+                "current":2,
+                "hitCount":false,
+                "optimizeCountSql":true,
+                "orders":[],
+                "pageNums":[
+                    1,
+                    2,
+                    3
+                ],
+                "pages":3,
+                "records":[],
+                "searchCount":true,
+                "size":3,
+                "total":9
+            },
             accidentList:[{
                 "title": null,
                 "updateTime": "2022-08-21T23:46:49",
@@ -287,9 +323,30 @@
             this.getAllData()
         },
         methods: {
+            targetPageSearch:function(){
+                if (this.targetPage!=null&&this.targetPage!==''){
+                    if (isNaN(this.targetPage)){
+                        alert('页码必须是数字!')
+                        this.targetPage = null
+                    }else if (this.targetPage>this.page.pages){
+                        alert('总共'+this.page.pages+'页，没有第'+this.targetPage+'页，请输入正确的页号！')
+                        this.targetPage = null
+                    }else {
+                        this.pageSearch(this.targetPage)
+                        this.targetPage = null
+                    }
+                }
+            },
+
+            pageSearch:function(pageNum){
+                this.searchParam.pageNum = pageNum
+                this.mixSearch()
+            },
+
             getAllData: function(){
                 axios.get('/accident/info/all').then(res => {
-                    this.accidentList = res.data.data
+                    // this.accidentList = res.data.data
+                    this.page = res.data.data
                     console.log(res.data.data)
                 })
             },
@@ -300,7 +357,9 @@
                 this.checkedTag = tagName
                 // 搜索点击的标签
                 this.searchParam.tagId = tagId
-                this.mixSearch()
+                // 修改搜索页前保存当前搜索页
+                this.tagClickBeforePage = this.searchParam.pageNum
+                this.pageSearch(1)
                 // axios.get('/accident/info/get/'+tagId).then(res => {
                 //     this.accidentList = res.data.data
                 //     console.log(res.data.data)
@@ -320,7 +379,17 @@
                     axios.get('/accident/info/mix',{
                         params: this.searchParam
                     }).then(res => {
-                        this.accidentList = res.data.data
+                        //this.accidentList = res.data.data
+                        let r = res.data.data
+                        if (r.total == 0){
+                            alert('查无结果')
+                        }else if (r.total>0&&r.records.length==0){
+                            alert('总共'+r.pages+'页，没有第'+r.current+'页，请选择其他页')
+                           // 恢复搜索页的原页号
+                            this.searchParam.pageNum = this.page.current
+                        }else {
+                            this.page = r
+                        }
                         console.log(res.data.data)
                     })
                 }
@@ -330,7 +399,9 @@
                 this.checkedTagFlag=false
                 // 清除标签搜索条件
                 this.searchParam.tagId = null
-                this.mixSearch()
+                // 取出标签点击前的页号
+                this.pageSearch(this.tagClickBeforePage)
+                this.tagClickBeforePage = null
             }
         }
     })

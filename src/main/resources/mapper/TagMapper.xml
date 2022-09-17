@@ -9,4 +9,10 @@
         <result column="count" property="count" />
     </resultMap>
 
+    <select id="selectTagByInfoId" resultMap="BaseResultMap">
+        select t.id ,t.tag from accident_tag atg
+        left join tag t on t.id = atg.tag_id
+        where atg.info_id = #{infoId}
+        order by t.id desc
+    </select>
 </mapper>

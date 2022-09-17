@@ -1,11 +1,16 @@
 package com.lq.accident.service.impl;
 
+import com.lq.accident.mapper.InfoSourceMapper;
+import com.lq.accident.mapper.TagMapper;
 import com.lq.accident.model.AccidentTag;
 import com.lq.accident.model.Info;
 import com.lq.accident.mapper.InfoMapper;
 import com.lq.accident.model.InfoSource;
 import com.lq.accident.model.Tag;
 import com.lq.accident.model.dto.InfoDTO;
+import com.lq.accident.model.dto.SearchDTO;
+import com.lq.accident.model.page.MyPage;
+import com.lq.accident.model.vo.InfoVO;
 import com.lq.accident.service.IInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
@@ -30,11 +35,17 @@ import java.util.stream.Collectors;
 public class InfoServiceImpl extends ServiceImpl<InfoMapper, Info> implements IInfoService {
 
     @Autowired
+    InfoMapper infoMapper;
+    @Autowired
     TagServiceImpl tagService;
+    @Autowired
+    TagMapper tagMapper;
     @Autowired
     AccidentTagServiceImpl accidentTagService;
     @Autowired
     InfoSourceServiceImpl infoSourceService;
+    @Autowired
+    InfoSourceMapper infoSourceMapper;
     /**
      * 保存事件信息
      * @param infoDTO
@@ -69,5 +80,17 @@ public class InfoServiceImpl extends ServiceImpl<InfoMapper, Info> implements II
             }
             infoSourceService.saveBatch(infoDTO.getSourceUrls());
         }
+    }
+
+    @Override
+    public MyPage<InfoVO> mixPageSearch(SearchDTO dto) {
+        MyPage<InfoVO> res = infoMapper.selectAllInfo1(new MyPage(dto.getPageNum(),3),dto);
+        if (res.getSize()==0) return res;
+        res.getRecords().forEach(r->{
+            r.setTags(tagMapper.selectTagByInfoId(r.getId()));
+            r.setSourceUrls(infoSourceMapper.selectInfoSourceVOByInfoId(r.getId()));
+            r.setId(null);
+        });
+        return res;
     }
 }

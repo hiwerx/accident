@@ -14,6 +14,8 @@ public class MyPage<T> extends Page<T> {
     private boolean hasPreviousPage;
     private boolean isFirstPage;
     private boolean isLastPage;
+    private long nextPage;
+    private long prePage;
     public MyPage(){}
 
     public MyPage(long current, long size) {
@@ -22,20 +24,35 @@ public class MyPage<T> extends Page<T> {
 
     public void setSelf(){
         this.hasNextPage = hasNext();
-        hasPreviousPage = hasPrevious();
+        if (hasNextPage) nextPage = current+1;
+        hasPreviousPage = hasPrevious()&&getPages()>=current;
+        if (hasPreviousPage) prePage = current-1;
+
         if (current == 1) isFirstPage = true;
         else isFirstPage = false;
         if (current == getPages()) isLastPage = true;
         else isLastPage = false;
+        // 左右2侧页码个数
+        long navigatePage = 2;
+        if (current<1||getPages()<current) return;
         TreeSet<Long> pageNums = new TreeSet<>();
         pageNums.add(current);
         long page = current;
-        for (int i = 0; i < 2; i++) {
+        // 计算左减个数
+        long subNum = navigatePage;
+        if (getPages()-current<navigatePage)
+            subNum = subNum+navigatePage-(getPages()-current);
+        for (int i = 0; i < subNum; i++) {
             page--;
             if (page>0)pageNums.add(page);
         }
+
         page = current;
-        for (int i = 0; i < 2; i++) {
+        // 计算右加个数
+        long addNum = navigatePage;
+        if (current -1 <navigatePage)
+            addNum = addNum +navigatePage - (current-1);
+        for (int i = 0; i < addNum; i++) {
             page++;
             if (page<=getPages())pageNums.add(page);
         }

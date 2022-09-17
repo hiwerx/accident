@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.lq.accident.model.Tag;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * <p>
  * 标签 Mapper 接口
@@ -14,5 +16,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface TagMapper extends BaseMapper<Tag> {
-
+    List<Tag>  selectTagByInfoId(Integer infoId);
 }

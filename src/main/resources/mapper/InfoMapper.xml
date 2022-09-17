@@ -22,6 +22,7 @@
     </resultMap>
 
     <resultMap id="AllInfoMap" type="com.lq.accident.model.vo.InfoVO">
+        <result column="id" property="id" />
         <result column="title" property="title" />
         <result column="date" property="date" />
         <result column="place" property="place" />
@@ -73,5 +74,25 @@ from accident_info ai
 order by ai.date desc, source_date, t.id desc
 
     </select>
-
+    <!--    拆掉多表联查，解决分页问题-->
+    <select id="selectAllInfo1" resultMap="AllInfoMap">
+        select distinct ai.*, at.name typeName
+        --         t.id tagId,t.tag,
+        --         i.url,i.url_title, c.channel, i.source_date
+        from accident_info ai
+        left join accident_type at on ai.type = at.id
+        left join accident_tag atg on atg.info_id = ai.id
+        left join tag t on t.id = atg.tag_id
+        where ai.status is null
+        <if test="dto.tagId != null">
+            AND ai.id in (select atg1.info_id from accident_tag atg1 where atg1.tag_id = #{dto.tagId})
+        </if>
+        <if test="dto.startDate != null and dto.endDate != null ">
+            and ai.date between #{dto.startDate} and #{dto.endDate}
+        </if>
+        <if test="dto.content != null">
+            and (ai.introduce like #{dto.content} or ai.reason like #{dto.content})
+        </if>
+        order by ai.date desc
+    </select>
 </mapper>

@@ -2,6 +2,9 @@ package com.lq.accident.service;
 
 import com.lq.accident.model.Info;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.lq.accident.model.dto.SearchDTO;
+import com.lq.accident.model.page.MyPage;
+import com.lq.accident.model.vo.InfoVO;
 
 /**
  * <p>
@@ -13,4 +16,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IInfoService extends IService<Info> {
 
+    MyPage<InfoVO> mixPageSearch(SearchDTO dto);
 }

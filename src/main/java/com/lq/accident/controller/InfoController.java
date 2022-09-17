@@ -63,8 +63,8 @@ public class InfoController {
     @Autowired
     IInfoSourceService sourceService;
     @RequestMapping("all")
-    public R<List<InfoVO>> getAll(){
-        return R.ok(infoMapper.selectAllInfo(new SearchDTO()));
+    public R getAll(){
+        return mixSearch(new SearchDTO());
     }
 
     @RequestMapping("get/{tagId}")
@@ -101,7 +101,9 @@ public class InfoController {
         // 参数校验
         initSearchDTO(dto);
         if(dto.getContent()!=null)dto.setContent("%"+dto.getContent().trim()+"%");
-        return R.ok(infoMapper.selectAllInfo(dto));
+        MyPage<InfoVO> res = infoService.mixPageSearch(dto);
+        res.setSelf();
+        return R.ok(res);
     }
 
     /**
@@ -184,7 +186,7 @@ public class InfoController {
 //                .orderByDesc(Info::getDate)
 //                .list();
         myPage.setSelf();
-        Console.log(myPage);
+//        Console.log(myPage);
         return R.ok(myPage);
     }
 

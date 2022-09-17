@@ -12,5 +12,19 @@
         <result column="source_date" property="sourceDate" />
         <result column="channel_id" property="channelId" />
     </resultMap>
+    <resultMap id="sourceUrlsMap" type="com.lq.accident.model.vo.InfoSourceVO">
+        <result column="url" property="url" />
+        <result column="url_title" property="urlTitle" />
+        <result column="channel" property="channel" />
+        <result column="source_date" property="sourceDate" />
+    </resultMap>
+    <select id="selectInfoSourceVOByInfoId" resultMap="sourceUrlsMap">
+        select
+            i.url,i.url_title, c.channel, i.source_date
+        from info_source i
+            left join channel c on i.channel_id = c.id
+        where i.info_id = #{infoId}
+        order by source_date
+    </select>
 
 </mapper>
