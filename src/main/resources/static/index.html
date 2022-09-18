@@ -30,6 +30,7 @@
     <script src="./assets/vendor/vue/dist/vue.js"></script>
     <!--引入axios框架-->
     <script src="./assets/vendor/axios/dist/axios.min.js"></script>
+    <script src="./assets/js/myUtil.js"></script>
 
 </head>
 <style>
@@ -41,7 +42,7 @@
         font-size: 90%;
     }
 </style>
-<body>
+<body  onbeforeunload="cacheReqData()">
 
 <div id="acctPwdId" class="container-fluid">
 
@@ -320,7 +321,10 @@
                 }]
         },
         created: function () {
-            this.getAllData()
+            // this.getAllData()
+            //加载cookie中请求参数
+            this.loadSearchParam()
+            this.mixSearch()
         },
         methods: {
             targetPageSearch:function(){
@@ -383,6 +387,8 @@
                         let r = res.data.data
                         if (r.total == 0){
                             alert('查无结果')
+                            // 清除搜索框
+                            this.searchParam.content = null
                         }else if (r.total>0&&r.records.length==0){
                             alert('总共'+r.pages+'页，没有第'+r.current+'页，请选择其他页')
                            // 恢复搜索页的原页号
@@ -402,8 +408,21 @@
                 // 取出标签点击前的页号
                 this.pageSearch(this.tagClickBeforePage)
                 this.tagClickBeforePage = null
+            },
+            // 从cookie中获取请求参数
+            loadSearchParam:function(){
+                let data = getCookie('pubIndexReq')
+                console.log('data:'+data)
+                if (data!='')
+                    this.searchParam = JSON.parse(data)
             }
         }
     })
+    //离开页面，请求数据存入cookie
+    function cacheReqData() {
+        let reqData = accidentApp.searchParam
+        let reqStrData = JSON.stringify(reqData)
+        setCookieMin("pubIndexReq",reqStrData,30)
+    }
 </script>
 </html>

@@ -41,7 +41,7 @@
         font-size: 90%;
     }
 </style>
-<body>
+<body  onbeforeunload="cacheReqData()">
 
 <div id="acctPwdId" class="container-fluid">
 
@@ -67,7 +67,7 @@
                     <div class="input-group-prepend">
                         <select class="selectpicker" name="checkedDate"
                                 v-model="searchParam.checkedDate"
-                                v-on:change="mixSearch()">
+                                v-on:change="pageSearch(1)">
                             <option value="1">全部</option>
                             <option value="2">当月</option>
                             <option value="3">上月至今</option>
@@ -77,7 +77,7 @@
                             <option value="7">自定义</option>
                         </select>
                     </div>
-                    <input type="text" class="form-control"  placeholder="搜索" v-model="searchParam.content" v-on:change="mixSearch">
+                    <input type="text" class="form-control"  placeholder="搜索" v-model="searchParam.content" v-on:change="pageSearch(1)">
                     <div class="input-group-append">
                         <span class="input-group-text"><i class="fas fa-search"></i></span>
                     </div>
@@ -100,14 +100,17 @@
                     class="bg-white" scope="row">
                     <td v-text="index+1"></td>
                     <td v-text="a.title">nabiha.armstrong@example.com</td>
-                    <td>
-                        <a class="btn btn-primary" :href="'edit.html?id='+a.id" >编辑</a>
-                        <button type="button"
+                    <td style="white-space:nowrap">
+                        <a :href="'edit.html?id='+a.id" >
+                            <i  class="fa-solid fa-pen-to-square"></i>
+                        </a>
+                        <a href="#" class="text-danger"
                                 v-on:click="delInfoId=a.id"
-                                class="btn btn-primary" data-dismiss="modal"
+                                data-dismiss="modal"
                                 data-toggle="modal" data-target="#delInfoModal"
 
-                        >删除</button>
+                        ><i class="fa-solid fa-trash-can"></i></a>
+
                     </td>
                 </tr>
                 </tbody>
@@ -133,11 +136,18 @@
 
             <nav v-if="page.pages>1" aria-label="Page navigation example">
                 <ul class="pagination justify-content-center">
-                    <li class="page-item" v-if="page.current > 1"><a class="page-link" href="#"  v-on:click="pageSearch(page.current-1)"><i class="fas fa-angle-left"></i></a></li>
-                    <li v-for="p in page.pageNums" v-bind:class="'page-item '+(p==page.current?'active':'')" ><a class="page-link" href="#" v-on:click="pageSearch(p)" v-text="p">1</a></li>
+                    <li class="page-item" v-if="!page.firstPage"><a class="page-link" href="#"  v-on:click="pageSearch(1)">首页</i></a></li>
+
+                    <li class="page-item" v-if="page.hasPreviousPage"><a class="page-link" href="#"  v-on:click="pageSearch(page.prePage)"><i class="fas fa-angle-left"></i></a></li>
+                    <li v-for="p in page.pageNums" v-bind:class="'page-item '+(p==page.current?'active':'d-none d-md-block')" ><a class="page-link" href="#" v-on:click="pageSearch(p)" v-text="p">1</a></li>
 <!--                    <li class="page-item active"><a class="page-link" href="#">2</a></li>-->
 
-                    <li class="page-item" v-if="page.current < page.pages"><a class="page-link " href="#"><i class="fas fa-angle-right"  v-on:click="pageSearch(page.current+1)"></i></a></li>
+                    <li class="page-item" v-if="page.hasNextPage"><a class="page-link " href="#" v-on:click="pageSearch(page.nextPage)"><i class="fas fa-angle-right"  ></i></a></li>
+
+                    <li class="page-item" v-if="!page.lastPage"><a class="page-link" href="#"  v-on:click="pageSearch(page.pages)">尾页</i></a></li>
+
+                    <li ><a class="page-link  d-none d-md-block" v-on:click="targetPageSearch">调转至</a></li>
+                    <li ><input class="page-link  d-none d-md-block" v-model="targetPage" v-on:change="targetPageSearch" size="1" type="text"></li>
                 </ul>
             </nav>
 
@@ -150,6 +160,7 @@
     let accidentApp = new Vue({
         el: "#accidentId",
         data: {
+            targetPage:null, //自定义跳转页
             delInfoId:null,//被选中的待删除的id
             searchParam:{
                 checkedDate:null,
@@ -197,10 +208,24 @@
             }
         },
         created: function () {
-            this.pageSearch(1)
-            //this.mixSearch()
+            this.loadSearchParam()
+            // this.pageSearch(1)
+            this.mixSearch()
         },
         methods: {
+            targetPageSearch:function(){
+                if (this.targetPage!=null&&this.targetPage!==''){
+                    if (isNaN(this.targetPage)){
+                        alert('页码必须是数字!')
+                    }else if (this.targetPage>this.page.pages){
+                        alert('总共'+this.page.pages+'页，没有第'+this.targetPage+'页，请输入正确的页号！')
+                        this.targetPage = null
+                    }else {
+                        this.pageSearch(this.targetPage)
+                        this.targetPage = null
+                    }
+                }
+            },
 
             pageSearch:function(pageNum){
                 this.searchParam.pageNum = pageNum
@@ -225,7 +250,7 @@
                         this.page = res.data.data
 
                         // 起始页数重置为1
-                        this.searchParam.pageNum = 1
+                        // this.searchParam.pageNum = 1
                     })
                 }
             },
@@ -243,8 +268,21 @@
                             alert('删除成功')
                         }
                     })
+            },
+            // 从cookie中获取请求参数
+            loadSearchParam:function(){
+                let data = getCookie('adminIndexReq')
+                // console.log('data:'+data)
+                if (data!='')
+                    this.searchParam = JSON.parse(data)
             }
         }
     })
+    //离开页面，请求数据存入cookie
+    function cacheReqData() {
+        let reqData = accidentApp.searchParam
+        let reqStrData = JSON.stringify(reqData)
+        setCookieMin("adminIndexReq",reqStrData,30)
+    }
 </script>
 </html>
