@@ -132,7 +132,12 @@
                 <div class="card mb-1" v-for="(source,index) in infoSource">
                     <div class="card-header">
                         <div>来源<span v-text="(index+1)"></span>
-                            <button class="btn btn-primary" v-on:click="delInfoSource(index)">删除</button>
+                            <button class="btn btn-primary"
+                                    v-on:click="delInfoSourceIndex=index"
+                                    data-dismiss="modal"
+                                    data-toggle="modal"
+                                    data-target="#delInfoSourceModal"
+                            >删除</button>
                             <button class="btn btn-primary" v-on:click="editInfoSource(index)">确认修改</button>
                             <a class="btn btn-primary" :href="source.url"  target="_blank">访问</a>
                         </div>
@@ -166,7 +171,7 @@
                     </div>
                 </div>
             </div>
-
+<!--新增来源-->
             <div class="modal fade"  id="addInfoSourceModal" tabindex="-1">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
@@ -212,8 +217,27 @@
                     </div>
                 </div>
             </div>
-        </div>
 
+
+        </div>
+            <!--            来源删除确认-->
+            <div class="modal fade"  id="delInfoSourceModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <div class="row justify-content-center">
+                                <div class="col-lg-8 text-center py-4">
+                                    <div class="mb-4">
+                                        确认删除？
+                                    </div>
+                                    <button type="button" class="btn btn-secondary mx-2" data-dismiss="modal" >取消</button>
+                                    <button type="button" class="btn btn-primary mx-2"  v-on:click="delInfoSource">确定</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
     </div>
 </div>
 </div>
@@ -261,13 +285,16 @@
                     "url":'http://www.ee.com',
                     "urlTitle":'暂无标题'
                 }],
+            // 保存新添加的source信息
             newInfoSource:{
                 "channelId":null,
                 "infoId":infoId,
                 "sourceDate":null,
                 "url":null,
                 "urlTitle":null
-            }
+            },
+            // 保存要删除的source在数组中的位置
+            delInfoSourceIndex:null
         },
         created: function () {
             axios.get('/accident/type/list').then(res => {
@@ -357,9 +384,9 @@
                     }
                 })
             },
-            delInfoSource: function (i) {
+            delInfoSource: function () {
                 axios.request({
-                    url: '/accident/infoSource/del/'+this.infoSource[i].id,
+                    url: '/accident/infoSource/del/'+this.infoSource[this.delInfoSourceIndex].id,
                     method: 'post'
                 }).then(res => {
                     let dat = res.data
@@ -367,7 +394,11 @@
                     // 给响应数据赋值
                     if (dat.code == 0) {
                         // 删除成功移除i位置元素
-                        this.infoSource.splice(i, 1)
+                        this.infoSource.splice(this.delInfoSourceIndex, 1)
+                        // 隐藏模态框
+                        $('#delInfoSourceModal').modal('hide')
+                    }else {
+                        alert('删除失败！')
                     }
                 })
             },

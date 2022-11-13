@@ -99,16 +99,16 @@
                 <tr v-for="(a,index) in page.records"
                     class="bg-white" scope="row">
                     <td v-text="index+1"></td>
-                    <td v-text="a.title">nabiha.armstrong@example.com</td>
+                    <td v-text="a.title"></td>
                     <td style="white-space:nowrap">
-                        <a :href="'edit.html?id='+a.id" >
+                        <a :href="'edit.html?id='+a.id" title="编辑">
                             <i  class="fa-solid fa-pen-to-square"></i>
                         </a>
                         <a href="#" class="text-danger"
-                                v-on:click="delInfoId=a.id"
-                                data-dismiss="modal"
-                                data-toggle="modal" data-target="#delInfoModal"
-
+                            title="删除"
+                            v-on:click="delInfoId=a.id"
+                            data-dismiss="modal"
+                            data-toggle="modal" data-target="#delInfoModal"
                         ><i class="fa-solid fa-trash-can"></i></a>
 
                     </td>
@@ -228,6 +228,8 @@
             },
 
             pageSearch:function(pageNum){
+                // 如果点击页为当前页面则不搜索
+                if (pageNum==this.page.current)return
                 this.searchParam.pageNum = pageNum
                 this.mixSearch()
             },

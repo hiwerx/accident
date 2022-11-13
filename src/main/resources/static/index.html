@@ -156,7 +156,7 @@
                     </div>
 
                     <!--            参考-->
-                    <div >
+                    <div v-if="a.sourceUrls.length>0">
                         <span class="font-weight-bold">参考</span>
                     </div>
                     <div class="refer" >
@@ -343,6 +343,8 @@
             },
 
             pageSearch:function(pageNum){
+                // 如果点击页为当前页面则不搜索
+               // if (pageNum==this.page.current)return
                 this.searchParam.pageNum = pageNum
                 this.mixSearch()
             },
@@ -362,7 +364,8 @@
                 // 搜索点击的标签
                 this.searchParam.tagId = tagId
                 // 修改搜索页前保存当前搜索页
-                this.tagClickBeforePage = this.searchParam.pageNum
+                if(this.tagClickBeforePage==null) this.tagClickBeforePage = this.searchParam.pageNum
+                //console.log(this.tagClickBeforePage)
                 this.pageSearch(1)
                 // axios.get('/accident/info/get/'+tagId).then(res => {
                 //     this.accidentList = res.data.data
@@ -396,7 +399,7 @@
                         }else {
                             this.page = r
                         }
-                        console.log(res.data.data)
+                        // console.log(res.data.data)
                     })
                 }
             },
@@ -407,6 +410,7 @@
                 this.searchParam.tagId = null
                 // 取出标签点击前的页号
                 this.pageSearch(this.tagClickBeforePage)
+                // 清除页号
                 this.tagClickBeforePage = null
             },
             // 从cookie中获取请求参数

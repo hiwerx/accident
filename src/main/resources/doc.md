@@ -48,3 +48,5 @@
 
 # 参考文档
   [基于MybatisPlus实现多表的关联查询，实现分页，多条件查询_捡黄金的少年的博客-CSDN博客_mybatisplus分页多表关联查询](https://blog.csdn.net/weixin_43288858/article/details/108121197)
+  
+  搜不到结果时候检查是否有页数，有则返回最大页数据，无则直接返回
