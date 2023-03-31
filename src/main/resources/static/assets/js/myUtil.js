@@ -20,11 +20,9 @@ function parsePram(){
     let parArr = deParams.split('&')
     for (let i = 0; i < parArr.length; i++) {
         let par = parArr[i];
-        if (par.indexOf('=')>0){
-            let pr = par.split('=')
-            if (pr.length === 2 && ''!==pr[0] && ''!== pr[1]){
-                obj[pr[0]]=pr[1]
-            }
+        let eqIndex = par.indexOf('=');
+        if (eqIndex>0&&eqIndex<par.length-1){
+            obj[par.substring(0,eqIndex)]=par.substring(eqIndex+1)
         }
     }
     if (deParams.indexOf('=')!=-1){
@@ -85,6 +83,58 @@ function getCookie(name){
 function removeCookie(name){
     setCookieDay(name,1,-1);
 };
+
+/**
+ *
+ * @param current 当前页
+ * @param size 每页条数
+ * @param count 数据总量
+ * @returns {{}}
+ */
+function pageInfo(current,size,count){
+    let pageInfo = {};
+    let pages =count%size==0?count/size:(count/size+1)
+    if (current<1) current = 1
+    else if (current>pages) current = pages
+
+    pageInfo.pages = pages;
+    pageInfo.hasNextPage = current<pages
+    if (pageInfo.hasNextPage) pageInfo.nextPage = current+1
+    pageInfo.hasPreviousPage = current>1
+    if (pageInfo.hasPreviousPage) pageInfo.prePage = current-1
+
+    pageInfo.isFirstPage = current == 1
+    pageInfo.isLastPage = current == pages
+
+
+    // 左右2侧页码个数(自定义）
+    let navigatePage = 2;
+    let pageNums = []
+    pageNums.push(current);
+    let page = current;
+    // 计算左减个数
+    let subNum = navigatePage;
+    if (pages-current<navigatePage)
+        subNum = 2*navigatePage-(pages-current);
+    for (let i = 0; i < subNum; i++) {
+        page--;
+        if (page>0)pageNums.push(page);
+        else break
+    }
+
+    page = current;
+    // 计算右加个数
+    let addNum = navigatePage;
+    if (current -1 <navigatePage)
+        addNum = 2*navigatePage - (current-1);
+    for (let i = 0; i < addNum; i++) {
+        page++;
+        if (page<=pages)pageNums.push(page);
+        else break
+    }
+    pageInfo.pageNums = pageNums.sort((a,b)=>a-b)
+    return pageInfo
+}
 
 
 

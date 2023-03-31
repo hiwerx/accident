@@ -28,10 +28,8 @@ public class MyPage<T> extends Page<T> {
         hasPreviousPage = hasPrevious()&&getPages()>=current;
         if (hasPreviousPage) prePage = current-1;
 
-        if (current == 1) isFirstPage = true;
-        else isFirstPage = false;
-        if (current == getPages()) isLastPage = true;
-        else isLastPage = false;
+        isFirstPage = current == 1;
+        isLastPage = current == getPages();
         // 左右2侧页码个数
         long navigatePage = 2;
         if (current<1||getPages()<current) return;
@@ -45,6 +43,7 @@ public class MyPage<T> extends Page<T> {
         for (int i = 0; i < subNum; i++) {
             page--;
             if (page>0)pageNums.add(page);
+            else break;
         }
 
         page = current;
@@ -55,6 +54,7 @@ public class MyPage<T> extends Page<T> {
         for (int i = 0; i < addNum; i++) {
             page++;
             if (page<=getPages())pageNums.add(page);
+            else break;
         }
         this.pageNums = new ArrayList<>(pageNums);
 

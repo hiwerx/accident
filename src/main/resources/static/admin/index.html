@@ -229,7 +229,7 @@
 
             pageSearch:function(pageNum){
                 // 如果点击页为当前页面则不搜索
-                if (pageNum==this.page.current)return
+                // if (pageNum==this.page.current)return 影响文本搜索
                 this.searchParam.pageNum = pageNum
                 this.mixSearch()
             },
