@@ -92,11 +92,14 @@ function removeCookie(name){
  * @returns {{}}
  */
 function pageInfo(current,size,count){
+    current=parseInt(current)
+    size=parseInt(size)
+    count=parseInt(count)
     let pageInfo = {};
-    let pages =count%size==0?count/size:(count/size+1)
+    let pages =count%size==0?count/size:parseInt(count/size+1)
     if (current<1) current = 1
     else if (current>pages) current = pages
-
+    pageInfo.current = current
     pageInfo.pages = pages;
     pageInfo.hasNextPage = current<pages
     if (pageInfo.hasNextPage) pageInfo.nextPage = current+1
