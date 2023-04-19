@@ -42,9 +42,11 @@ if($type==0) {
         exit();
     }
 
+    // 保存标签关联
     $infoDb->saveTag($db,$tagNames,$infoId);
+    // 保存来源关联
     $infoDb->saveSourceInfo($db,$sourceInfos,$infoId);
-    echo json_encode($infoMap,JSON_UNESCAPED_UNICODE);
+    echo $jsonResult->succ0();
 
 }elseif($type == 1){
     // 加载一个信息
