@@ -95,4 +95,15 @@ class InfoDb
             $db->save('info_source',$sourceInfo);
         }
     }
+
+    public function querySort(DataBasic $db,$year){
+        $sql = 'SELECT id,date, title, injury_num injuryNum,death_num deathNum,missing_num missingNum, (death_num+missing_num) ttl 
+            FROM accident_info where YEAR(date) = \''.$year.'\' ORDER BY (death_num+missing_num)  DESC,date desc LIMIT 0,10';
+        $res = $db->execute($sql);
+        if ($res == -1){
+            return array();
+        }else{
+            return $res;
+        }
+    }
 }

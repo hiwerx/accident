@@ -68,5 +68,16 @@ if($type==0) {
     }
     echo $jsonResult->succ1(array('records'=>$infoList,'total'=>$total));
 
+}elseif ($type==1){
+    if (isset($_GET['year'])){
+        $year = $_GET['year'];
+        $infoDb = new InfoDb();
+        echo $jsonResult->succ2($infoDb->querySort($db,$year),'查询成功');
+    }else{
+        echo $jsonResult->fail1('必传参数为空');
+    }
+
+}else{
+    echo $jsonResult->fail1('业务不支持');
 }
 
