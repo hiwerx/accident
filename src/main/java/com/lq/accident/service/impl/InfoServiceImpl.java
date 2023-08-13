@@ -84,17 +84,18 @@ public class InfoServiceImpl extends ServiceImpl<InfoMapper, Info> implements II
 
     @Override
     public MyPage<InfoVO> mixPageSearch(SearchDTO dto) {
-        MyPage<InfoVO> res = infoMapper.selectAllInfo1(new MyPage(dto.getPageNum(),3),dto);
+        MyPage<InfoVO> res = infoMapper.selectAllInfo1(new MyPage(dto.getPageNum(),5),dto);
 
         if (res.getRecords().size()==0){
             if(res.getPages()==0){
                 return res;
             } else {
                 // 如果有页数取最大页数
-                res = infoMapper.selectAllInfo1(new MyPage(res.getPages(),3),dto);
+                res = infoMapper.selectAllInfo1(new MyPage(res.getPages(),5),dto);
             }
         }
         res.getRecords().forEach(r->{
+            r.setIntroduces(r.getIntroduce().split("\n"));
             r.setTags(tagMapper.selectTagByInfoId(r.getId()));
             r.setSourceUrls(infoSourceMapper.selectInfoSourceVOByInfoId(r.getId()));
             r.setId(null);

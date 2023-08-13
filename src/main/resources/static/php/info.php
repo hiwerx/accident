@@ -54,7 +54,8 @@ if($type==0) {
 //            $infoList[$index]['deathNum']=$infoList[$index]['death_num'];
 //            $infoList[$index]['missingNum']=$infoList[$index]['missing_num'];
 
-
+            $pieces = explode("\n", $infoList[$index]['introduce']);
+            $infoList[$index]['introduces']=$pieces;
             $infoId = $infoList[$index]['id'];
 //            $tagIds = $db->execute("select tag_id from accident_tag where info_id = ".$infoId);
 //            $tagIdArr = array();

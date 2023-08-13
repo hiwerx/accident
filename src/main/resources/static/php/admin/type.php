@@ -47,7 +47,8 @@ if ($type==''){
     }
     $res = $db->save('info_source',$infoSource);
     if ($res!=-1){
-        echo $jsonResult->succ0();
+        $reqData['id']=$res;
+        echo $jsonResult->succ1($reqData);
     }else{
         echo $jsonResult->fail0();
     }

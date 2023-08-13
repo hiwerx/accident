@@ -50,6 +50,8 @@ public class InfoVO {
      */
     private String introduce;
 
+    private String[] introduces;
+
     /**
      * 受伤人数
      */
